@@ -7,6 +7,10 @@
 
 本文件帮助 LLM / 代理快速理解本站结构与学习路径。权威 API 仍以官网为准：https://tailwindcss.com/docs
 
+## 官网文档迁移
+
+`/docs` 按官网 `docs/index.tsx` 完整收录全部文档页。草案全文见 `/llms-full.txt`。
+
 ## 关于官网 llms.txt
 
 - 生产环境 `https://tailwindcss.com/llms.txt` 当前返回不可用（社区讨论中 Tailwind 对公开 llms.txt 持谨慎态度）。
@@ -19,7 +23,8 @@
 |------|------|
 | `/` | 课程大纲、搜索、路径筛选、进度 |
 | `/lesson/:slug` | 讲解 + 源码 + Live Demo + 测验 + 笔记 |
-| `/reference` | 工具类全表（可搜索，外链官网） |
+| `/docs` | **官网侧栏 1:1 全量目录**（196 页，中文索引） |
+| `/reference` | 工具类 Reference（草案 utilities + 语法） |
 | `/cheatsheet` | 速查表 |
 | `/playground` | HTML + Tailwind CDN 即时预览 |
 | `/studio` | 设计工坊闯关 |

@@ -1679,6 +1679,206 @@ export function cn(...inputs: ClassValue[]) {
     ],
   },
 
+  {
+    slug: "preflight",
+    title: "Preflight 基础重置",
+    summary: "官网 Base styles：modern-normalize 与默认边距。",
+    level: "入门",
+    track: "基础",
+    minutes: 7,
+    blocks: [
+      {
+        type: "text",
+        title: "什么是 Preflight",
+        body: "官网 Base styles → Preflight：一套建立在 modern-normalize 上的基础样式。\n\n作用包括：\n• 去掉默认 margin\n• 标题/段落继承字号\n• 图片默认 block、自适应\n• 表单控件边框可继承\n• border-box 全局\n\n写页面时若「默认样式怪」，先查 Preflight 是否被覆盖。",
+      },
+      {
+        type: "code",
+        title: "对应概念",
+        lang: "css",
+        code: `/* Preflight 会大致等价于这些思路（示意） */
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}`,
+      },
+      {
+        type: "tip",
+        body: "完整规则见官网 /docs/preflight。可用 @layer base 追加，而不是硬改第三方组件。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "pf1",
+            question: "Preflight 主要是？",
+            options: ["动画库", "基础样式重置", "路由插件", "色板生成器"],
+            answer: 1,
+            explain: "Base reset / normalize 层。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "layout-display",
+    title: "Display · Overflow · Object · Columns",
+    summary: "官网 Layout：display/float/overflow/object-fit/columns。",
+    level: "入门",
+    track: "布局",
+    minutes: 11,
+    blocks: [
+      {
+        type: "text",
+        title: "Layout 补全",
+        body: "官网 Layout 章节除 position 外还有：\n\n• display：block / inline / flex / grid / hidden / contents / sr-only 相关\n• float / clear：图文环绕（现代布局较少）\n• isolation：层叠上下文\n• object-fit / object-position：img/video 填充\n• overflow / overscroll-behavior：裁剪与滚动链\n• columns：多列文本排版\n• aspect-ratio、box-sizing、break-*\n\n本课补齐此前课程未单独展开的部分。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<img class="h-40 w-full object-cover object-center" src="..." alt="" />
+<div class="max-h-48 overflow-auto overscroll-contain">…长内容…</div>
+<div class="columns-2 gap-6">…多列正文…</div>
+<div class="hidden md:block">仅桌面显示</div>`,
+      },
+      { type: "demo", kind: "sizing", title: "动手：尺寸与裁剪" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ld1",
+            question: "图片裁切填满盒子？",
+            options: ["object-contain", "object-cover", "bg-cover on img", "fit-fill"],
+            answer: 1,
+            explain: "object-cover。",
+          },
+          {
+            id: "ld2",
+            question: "默认隐藏、md 显示？",
+            options: ["md:hidden", "hidden md:block", "invisible md:visible only", "display-md"],
+            answer: 1,
+            explain: "hidden + md:block/flex。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "masks",
+    title: "Mask 遮罩",
+    summary: "官网 Effects：mask-image 与相关属性。",
+    level: "进阶",
+    track: "视觉",
+    minutes: 8,
+    blocks: [
+      {
+        type: "text",
+        title: "Masks",
+        body: "官网 Effects 含 mask-image / size / position / repeat / origin / clip / composite / mode / type。\n\n用于渐隐边缘、不规则裁剪、与渐变 mask 结合做 fade。兼容性需参考官网 Compatibility。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="h-32 w-full bg-gradient-to-r from-sky-500 to-indigo-500
+  mask-[linear-gradient(to_bottom,black,transparent)]">
+  底部渐隐
+</div>`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "mk1",
+            question: "遮罩主要属性？",
+            options: ["clip-only", "mask-image 等 mask-*", "opacity-mask", "z-mask"],
+            answer: 1,
+            explain: "mask-* 系列。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "custom-styles",
+    title: "添加自定义样式",
+    summary: "官网 Adding custom styles 全链路。",
+    level: "进阶",
+    track: "主题",
+    minutes: 10,
+    blocks: [
+      {
+        type: "text",
+        title: "Adding custom styles",
+        body: "官网核心概念页覆盖：\n1. 任意值 []\n2. 主题扩展 @theme\n3. 自定义工具 @utility\n4. 自定义变体 @custom-variant\n5. 任意变体 [&_svg]:\n6. 何时写真正的 CSS\n\n原则：能进主题的进主题；一次性的用任意值；复用多次抽 @utility 或组件。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "css",
+        code: `@theme {
+  --color-brand: #38bdf8;
+}
+
+@utility content-auto {
+  content-visibility: auto;
+}
+
+/* 任意变体 */
+/* class="[&_svg]:size-4" */`,
+      },
+      { type: "demo", kind: "v4", title: "动手：令牌与扩展" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "cs1",
+            question: "复用多次的自定义样式优先？",
+            options: ["到处 p-[13px]", "@theme / @utility / 组件", "只写 style=", "全局 * 选择器"],
+            answer: 1,
+            explain: "设计系统优先。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "compatibility",
+    title: "浏览器兼容",
+    summary: "官网 Compatibility：现代 CSS 基线。",
+    level: "进阶",
+    track: "工程",
+    minutes: 7,
+    blocks: [
+      {
+        type: "text",
+        title: "Compatibility",
+        body: "Tailwind v4 依赖较新的浏览器能力（如 cascade layers、color-mix、@property 等，以官网 Compatibility 列表为准）。\n\n生产前：\n• 确认目标浏览器矩阵\n• 对必须支持的旧环境评估是否仍用 v3 或 polyfill\n• 渐进增强，不假设所有 mask/container 特性都可用",
+      },
+      {
+        type: "tip",
+        body: "细节与版本表以 https://tailwindcss.com/docs/compatibility 为准，随浏览器更新。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "co1",
+            question: "上线前应？",
+            options: ["忽略兼容", "对照官网 Compatibility 与业务浏览器矩阵", "只测最新 Chrome", "关闭 Preflight"],
+            answer: 1,
+            explain: "以官方兼容说明 + 产品需求为准。",
+          },
+        ],
+      },
+    ],
+  },
+
 ];
 
 export const TRACKS = [

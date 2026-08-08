@@ -2,7 +2,7 @@
 
 交互式中文 Tailwind CSS **v4** 教程：课程 + 测验 + 进度 + Playground + 设计工坊 + **工具类 Reference**。
 
-对齐 [官网文档地图](https://tailwindcss.com/docs) 与官方草案 v4 参考（Core Syntax / Variants / Theme / Directives / Utilities）。
+已 1:1 迁移官网侧栏全部文档页（见 `/docs`），并对齐 [官网文档](https://tailwindcss.com/docs) 与官方草案 v4 参考（Core Syntax / Variants / Theme / Directives / Utilities）。
 
 **在线：** [https://xiaoqianran.github.io/learning-tailwind/](https://xiaoqianran.github.io/learning-tailwind/)  
 **仓库：** [https://github.com/xiaoqianran/learning-tailwind](https://github.com/xiaoqianran/learning-tailwind)  
@@ -28,6 +28,7 @@
 | 模块 | 路径 |
 |------|------|
 | 课程 | `/lesson/:slug` |
+| **官网文档全量目录（196 页）** | `/docs` |
 | 工具类 Reference | `/reference` |
 | 速查表 | `/cheatsheet` |
 | Playground | `/playground` |

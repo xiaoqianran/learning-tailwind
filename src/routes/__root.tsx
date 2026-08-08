@@ -19,6 +19,7 @@ import {
   Palette,
   BookMarked,
   Library,
+  Globe2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -76,6 +77,7 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 const NAV_EXTRA = [
+  { to: "/docs" as const, label: "官网目录", icon: Globe2 },
   { to: "/reference" as const, label: "Reference", icon: Library },
   { to: "/studio" as const, label: "设计工坊", icon: Palette },
   { to: "/cheatsheet" as const, label: "速查表", icon: BookMarked },
@@ -122,7 +124,7 @@ function AppShell({ children }: { children: ReactNode }) {
               Tailwind 实战学习
             </span>
             <span className="hidden rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-primary sm:inline">
-              v2
+              v3
             </span>
           </Link>
 

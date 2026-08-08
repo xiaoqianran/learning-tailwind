@@ -53,6 +53,11 @@ const lessonSlugs = [
   "editor-setup",
   "upgrade-guide",
   "official-map",
+  "preflight",
+  "layout-display",
+  "masks",
+  "custom-styles",
+  "compatibility",
 ];
 
 const lessonPaths = lessonSlugs.map((slug) => ({ path: `/lesson/${slug}` }));
@@ -67,6 +72,7 @@ const staticPages = [
   { path: "/studio" },
   { path: "/cheatsheet" },
   { path: "/reference" },
+  { path: "/docs" },
   ...lessonPaths,
 ];
 

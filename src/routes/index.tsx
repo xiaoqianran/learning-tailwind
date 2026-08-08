@@ -15,6 +15,7 @@ import {
   Code2,
   Palette,
   Library,
+  Globe2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -66,7 +67,7 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v2 · 对齐官网地图
+              v3 · 官网 196 页已迁移
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
@@ -79,7 +80,7 @@ function HomePage() {
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
             {LESSONS.length}{" "}
-            节中文课 + 可搜索工具类 Reference（170+）+ Playground + 工坊闯关。
+            节中文课 + 官网目录 196 页 + Reference+ Playground + 工坊闯关。
             概念在本站练熟，细节参数一键跳官网 docs。
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -93,10 +94,16 @@ function HomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
+            <Link to="/docs" className="no-underline">
+              <Button size="lg" variant="secondary">
+                <Globe2 className="h-4 w-4" />
+                官网全量目录
+              </Button>
+            </Link>
             <Link to="/reference" className="no-underline">
               <Button size="lg" variant="secondary">
                 <Library className="h-4 w-4" />
-                工具类 Reference
+                Reference
               </Button>
             </Link>
             <Link to="/playground" className="no-underline">
