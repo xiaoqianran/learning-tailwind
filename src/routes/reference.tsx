@@ -69,7 +69,7 @@ function ReferencePage() {
           <ExternalLink className="h-3 w-3 text-subtle" />
         </a>
         <Link
-          to="/docs"
+          to={"/docs" as any}
           className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-muted no-underline hover:text-fg"
         >
           官网全量目录
