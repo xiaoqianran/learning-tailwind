@@ -36,6 +36,23 @@ const lessonSlugs = [
   "dashboard",
   "patterns",
   "production",
+  "arbitrary",
+  "variants-deep",
+  "backgrounds",
+  "effects",
+  "filters",
+  "transforms",
+  "container-queries",
+  "directives",
+  "accessibility",
+  "svg",
+  "scroll",
+  "tables",
+  "reusing-styles",
+  "detecting-classes",
+  "editor-setup",
+  "upgrade-guide",
+  "official-map",
 ];
 
 const lessonPaths = lessonSlugs.map((slug) => ({ path: `/lesson/${slug}` }));
@@ -49,6 +66,7 @@ const staticPages = [
   { path: "/playground" },
   { path: "/studio" },
   { path: "/cheatsheet" },
+  { path: "/reference" },
   ...lessonPaths,
 ];
 

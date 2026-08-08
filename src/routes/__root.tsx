@@ -18,6 +18,7 @@ import {
   Code2,
   Palette,
   BookMarked,
+  Library,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -31,12 +32,12 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "Tailwind 实战学习 · 交互式中文教程",
+        title: "Tailwind 实战学习 · 对齐官网的中文交互教程",
       },
       {
         name: "description",
         content:
-          "Tailwind CSS 中文交互式教程：课程 + Demo + 测验 + 在线 Playground + 设计工坊。",
+          "Tailwind CSS v4 中文交互式教程：40 节课、工具类 Reference、Playground、设计工坊、测验与进度。覆盖官网 Core Concepts 与 Utilities 地图。",
       },
     ],
     links: [
@@ -75,6 +76,7 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 const NAV_EXTRA = [
+  { to: "/reference" as const, label: "Reference", icon: Library },
   { to: "/studio" as const, label: "设计工坊", icon: Palette },
   { to: "/cheatsheet" as const, label: "速查表", icon: BookMarked },
   { to: "/playground" as const, label: "Playground", icon: Code2 },
@@ -120,7 +122,7 @@ function AppShell({ children }: { children: ReactNode }) {
               Tailwind 实战学习
             </span>
             <span className="hidden rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-primary sm:inline">
-              v1
+              v2
             </span>
           </Link>
 

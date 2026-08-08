@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LESSONS, getLessonsByTrack } from "@/data/lessons";
+import { LESSONS, TRACKS, getLessonsByTrack } from "@/data/lessons";
 import { useProgress } from "@/store/progress";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   Code2,
   Palette,
+  Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -22,14 +23,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type TrackFilter =
-  | "全部"
-  | "基础"
-  | "布局"
-  | "交互"
-  | "主题"
-  | "组件"
-  | "实战";
+type TrackFilter = "全部" | (typeof TRACKS)[number];
 
 function HomePage() {
   const completed = useProgress((s) => s.completed);
@@ -72,7 +66,7 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v1 · Tailwind CSS
+              v2 · 对齐官网地图
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
@@ -81,11 +75,12 @@ function HomePage() {
             ) : null}
           </div>
           <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight text-balance text-fg sm:text-4xl">
-            带你系统学 Tailwind
+            系统学 Tailwind，覆盖官网核心面
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
-            交互式中文教程：讲解 + 对应源码 + Live Demo + 小测验。配套
-            Playground、设计工坊与速查表。
+            {LESSONS.length}{" "}
+            节中文课 + 可搜索工具类 Reference（170+）+ Playground + 工坊闯关。
+            概念在本站练熟，细节参数一键跳官网 docs。
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
@@ -98,10 +93,10 @@ function HomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/studio" className="no-underline">
+            <Link to="/reference" className="no-underline">
               <Button size="lg" variant="secondary">
-                <Palette className="h-4 w-4" />
-                设计工坊
+                <Library className="h-4 w-4" />
+                工具类 Reference
               </Button>
             </Link>
             <Link to="/playground" className="no-underline">
@@ -110,9 +105,10 @@ function HomePage() {
                 Playground
               </Button>
             </Link>
-            <Link to="/cheatsheet" className="no-underline">
+            <Link to="/studio" className="no-underline">
               <Button size="lg" variant="ghost">
-                速查表
+                <Palette className="h-4 w-4" />
+                设计工坊
               </Button>
             </Link>
             <Link to="/lab" className="no-underline">
@@ -156,6 +152,33 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="mt-6 grid gap-3 sm:grid-cols-3">
+        {[
+          {
+            t: "学",
+            d: "路径化课程 + 测验，对齐 Core Concepts",
+          },
+          {
+            t: "查",
+            d: "Reference 全表 + 速查表，外链官网单页",
+          },
+          {
+            t: "练",
+            d: "Playground / 工坊 / 练习场即时反馈",
+          },
+        ].map((x) => (
+          <div
+            key={x.t}
+            className="rounded-xl border border-border bg-surface-2 px-4 py-3"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+              {x.t}
+            </p>
+            <p className="mt-1 text-sm text-muted">{x.d}</p>
+          </div>
+        ))}
+      </section>
+
       {bookmarks.length > 0 ? (
         <section className="mt-6 rounded-xl border border-border bg-surface-2 px-4 py-3">
           <p className="text-xs font-medium text-muted">我的收藏</p>
@@ -186,33 +209,23 @@ function HomePage() {
             </h2>
             <p className="mt-1 text-sm text-muted">搜索与路径筛选</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                "全部",
-                "基础",
-                "布局",
-                "交互",
-                "主题",
-                "组件",
-                "实战",
-              ] as const
-            ).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTrack(t)}
-                className={cn(
-                  "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                  track === t
-                    ? "bg-primary text-primary-fg"
-                    : "bg-surface-3 text-muted hover:text-fg",
-                )}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {(["全部", ...TRACKS] as TrackFilter[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTrack(t)}
+              className={cn(
+                "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                track === t
+                  ? "bg-primary text-primary-fg"
+                  : "bg-surface-3 text-muted hover:text-fg",
+              )}
+            >
+              {t}
+            </button>
+          ))}
         </div>
 
         <div className="relative mt-4">

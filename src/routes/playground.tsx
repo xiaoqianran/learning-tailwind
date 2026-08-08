@@ -40,6 +40,27 @@ const PRESETS: { id: string; title: string; html: string }[] = [
 </form>`,
   },
   {
+    id: "glass",
+    title: "毛玻璃",
+    html: `<div class="relative flex h-48 w-full max-w-md items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-sky-600 to-indigo-700 p-6">
+  <div class="absolute -left-6 -top-6 size-24 rounded-full bg-white/20 blur-2xl"></div>
+  <div class="rounded-xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white shadow-xl backdrop-blur-md">
+    backdrop-blur-md · border-white/20
+  </div>
+</div>`,
+  },
+  {
+    id: "nav",
+    title: "顶栏",
+    html: `<header class="flex w-full max-w-lg items-center justify-between rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-3 backdrop-blur">
+  <span class="font-semibold text-white">Brand</span>
+  <nav class="flex items-center gap-3 text-sm text-slate-300">
+    <a class="hover:text-white">Docs</a>
+    <a class="rounded-md bg-sky-500 px-2.5 py-1 text-white hover:bg-sky-600">Start</a>
+  </nav>
+</header>`,
+  },
+  {
     id: "grid",
     title: "响应式栅格",
     html: `<div class="grid w-full max-w-lg grid-cols-1 gap-3 sm:grid-cols-2">

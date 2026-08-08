@@ -38,7 +38,7 @@ export type Lesson = {
   title: string;
   summary: string;
   level: "入门" | "进阶" | "实战";
-  track: "基础" | "布局" | "交互" | "主题" | "组件" | "实战";
+  track: "基础" | "布局" | "视觉" | "交互" | "进阶语法" | "主题" | "组件" | "工程" | "实战";
   minutes: number;
   blocks: LessonBlock[];
 };
@@ -1040,14 +1040,656 @@ export function cn(...inputs: ClassValue[]) {
       },
     ],
   },
+
+  {
+    slug: "arbitrary",
+    title: "任意值与修饰符",
+    summary: "[] 任意值、/opacity、!important、CSS 变量简写。",
+    level: "进阶",
+    track: "进阶语法",
+    minutes: 10,
+    blocks: [
+      {
+        type: "text",
+        title: "跳出刻度",
+        body: "官方文档称 Arbitrary values：当默认刻度不够时用方括号。\n\n• p-[13px]、w-[28rem]、grid-cols-[1fr_2fr]\n• 透明度：bg-black/50、text-white/80\n• 重要：hidden! 或 !flex（v4 支持后缀 !）\n• 变量：p-(--my-space)、text-(color:--brand)\n• 类型提示：text 既可是字号也可是颜色，用 text-(length:--x) 消歧。\n\n对照官网 Core Syntax，这是写生产代码最常用的「逃生舱」。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="w-[min(100%,28rem)] rounded-[1.25rem] bg-sky-500/15 p-[clamp(1rem,3vw,2rem)] text-[color:var(--brand,#38bdf8)]">
+  任意值 + 透明度 + 变量
+</div>`,
+      },
+      { type: "tip", body: "优先用设计令牌与刻度；任意值应是例外，而不是默认。" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ar1",
+            question: "50% 黑底？",
+            options: ["bg-black-50", "bg-black/50", "bg-opacity-black", "black:bg-50"],
+            answer: 1,
+            explain: "颜色/透明度修饰符。",
+          },
+          {
+            id: "ar2",
+            question: "任意 padding 13px？",
+            options: ["p-13", "p-[13px]", "pad-13px", "p(13px)"],
+            answer: 1,
+            explain: "方括号任意值。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "variants-deep",
+    title: "变体进阶",
+    summary: "group / peer / has / not / nth / ARIA。",
+    level: "进阶",
+    track: "进阶语法",
+    minutes: 12,
+    blocks: [
+      {
+        type: "text",
+        title: "状态不只 hover",
+        body: "官网 Hover, focus, and other states 覆盖大量变体。进阶组合：\n\n• group / group-hover: 父状态影响子\n• peer / peer-checked: 兄弟状态（常用于自定义 checkbox）\n• has-[:checked]、has-[img]：容器查询子树\n• not-hover、not-disabled\n• first / last / odd / even / nth-*\n• aria-expanded:、data-[state=open]:\n• 堆叠：dark:md:hover:bg-sky-500（从左到右）",
+      },
+      {
+        type: "code",
+        title: "对应源码 · group",
+        lang: "html",
+        code: `<a class="group flex items-center gap-3 rounded-lg p-3 hover:bg-slate-800">
+  <span class="font-medium group-hover:text-sky-400">标题</span>
+  <span class="text-slate-500 group-hover:text-slate-300">副文</span>
+</a>`,
+      },
+      { type: "demo", kind: "states", title: "动手：状态变体" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "vd1",
+            question: "父悬停时改子元素颜色用？",
+            options: ["parent-hover:", "group + group-hover:", "peer-hover: only", "has-hover:"],
+            answer: 1,
+            explain: "group 标记父级，子级用 group-hover:。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "backgrounds",
+    title: "背景与渐变",
+    summary: "bg-color / gradient / clip / attachment。",
+    level: "入门",
+    track: "视觉",
+    minutes: 10,
+    blocks: [
+      {
+        type: "text",
+        title: "Backgrounds",
+        body: "官网 Backgrounds 章节：background-color、image（含 linear/radial/conic gradient 工具类）、position、size、repeat、attachment、origin、clip。\n\n常用配方：\n• bg-gradient-to-r from-sky-500 to-indigo-500\n• bg-clip-text text-transparent 做渐变字\n• bg-cover bg-center\n• bg-fixed 视差感（注意移动端性能）",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="rounded-xl bg-gradient-to-br from-sky-500 via-cyan-400 to-indigo-500 p-6">
+  <p class="bg-clip-text text-2xl font-bold text-transparent bg-gradient-to-r from-white to-white/60">
+    Gradient
+  </p>
+</div>`,
+      },
+      { type: "demo", kind: "colors", title: "动手：色彩与表面" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "bg1",
+            question: "从左到右线性渐变？",
+            options: ["bg-gradient-x", "bg-gradient-to-r", "gradient-horizontal", "bg-linear-right"],
+            answer: 1,
+            explain: "bg-gradient-to-{t|r|b|l|…}。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "effects",
+    title: "阴影 · 透明度 · 混合",
+    summary: "box-shadow、text-shadow、opacity、mix-blend。",
+    level: "入门",
+    track: "视觉",
+    minutes: 9,
+    blocks: [
+      {
+        type: "text",
+        title: "Effects",
+        body: "官网 Effects：box-shadow / inset-shadow / text-shadow（v4.1+）、opacity、mix-blend-mode、background-blend-mode、mask-*。\n\n暗色 UI 偏好 shadow-sm + ring-1 ring-white/10，而不是厚重大阴影。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="rounded-xl bg-slate-900/80 p-4 shadow-lg ring-1 ring-white/10">
+  <p class="text-sm text-white/90">ring + shadow + 半透明表面</p>
+</div>`,
+      },
+      { type: "demo", kind: "borders", title: "动手：表面质感" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ef1",
+            question: "细描边光环常用？",
+            options: ["border-fat", "ring-1 ring-white/10", "outline-black", "glow-sm"],
+            answer: 1,
+            explain: "ring 基于 box-shadow，适合暗色描边。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "filters",
+    title: "滤镜与 Backdrop",
+    summary: "blur / brightness / backdrop-blur。",
+    level: "进阶",
+    track: "视觉",
+    minutes: 8,
+    blocks: [
+      {
+        type: "text",
+        title: "Filters",
+        body: "filter：blur、brightness、contrast、grayscale、hue-rotate、invert、saturate、sepia、drop-shadow。\n\nbackdrop-*：对元素背后的内容滤镜，经典毛玻璃：bg-white/10 backdrop-blur-md。\n\n注意：大面积 blur 有性能成本。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 毛玻璃",
+        lang: "html",
+        code: `<div class="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
+  Frosted glass
+</div>`,
+      },
+      { type: "demo", kind: "animation", title: "动手：视觉效果" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "fi1",
+            question: "毛玻璃关键工具？",
+            options: ["filter-blur on self only", "backdrop-blur + 半透明底", "opacity-0", "mix-blend-darken"],
+            answer: 1,
+            explain: "backdrop-blur 模糊背后内容。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "transforms",
+    title: "变换 Transforms",
+    summary: "scale / rotate / translate / skew。",
+    level: "进阶",
+    track: "交互",
+    minutes: 9,
+    blocks: [
+      {
+        type: "text",
+        title: "Transforms",
+        body: "官网 Transforms：scale、rotate、translate、skew、origin、perspective、backface。\n\n动效组合：transition + hover:-translate-y-1 hover:scale-105。\n负值：-translate-x-1、-rotate-6。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<button class="rounded-lg bg-sky-500 px-4 py-2 text-white transition
+  hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+  Lift
+</button>`,
+      },
+      { type: "demo", kind: "animation", title: "动手：变换与过渡" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tr1",
+            question: "悬停轻微上移？",
+            options: ["hover:up-1", "hover:-translate-y-1", "hover:mt--1", "hover:top--1"],
+            answer: 1,
+            explain: "负 translate-y。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "container-queries",
+    title: "容器查询",
+    summary: "@container 与 @ 变体。",
+    level: "进阶",
+    track: "进阶语法",
+    minutes: 10,
+    blocks: [
+      {
+        type: "text",
+        title: "不只媒体查询",
+        body: "现代布局可用容器查询：父级 @container，子级 @md:、@max-md: 等基于容器宽度响应，而不是视口。\n\n适合卡片进仪表盘网格：同一组件在窄栏/宽栏自动改布局。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="@container">
+  <div class="flex flex-col gap-2 @md:flex-row">
+    <div class="flex-1 rounded bg-slate-800 p-3">A</div>
+    <div class="flex-1 rounded bg-slate-800 p-3">B</div>
+  </div>
+</div>`,
+      },
+      {
+        type: "tip",
+        body: "命名容器：@container/main，子级 @md/main:flex-row。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "cq1",
+            question: "容器查询父级标记？",
+            options: ["@media-parent", "@container", "container-type-only class empty", "query-root"],
+            answer: 1,
+            explain: "@container 建立查询容器。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "directives",
+    title: "指令与函数",
+    summary: "@import @theme @utility @apply --spacing()。",
+    level: "进阶",
+    track: "主题",
+    minutes: 11,
+    blocks: [
+      {
+        type: "text",
+        title: "Directives（官网 Functions and directives）",
+        body: "v4 核心指令：\n• @import \"tailwindcss\"\n• @theme { } 设计令牌\n• @source 额外扫描路径\n• @utility 自定义工具类\n• @variant / @custom-variant\n• @apply 组合工具类（克制使用）\n• @plugin / @config 兼容层\n\n函数：--alpha()、--spacing() 在 CSS 中读取主题刻度。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "css",
+        code: `@import "tailwindcss";
+
+@theme {
+  --color-brand: #38bdf8;
+  --spacing-card: 1.5rem;
+}
+
+@utility card-surface {
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  padding: var(--spacing-card);
+}`,
+      },
+      { type: "demo", kind: "v4", title: "动手：令牌" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "di1",
+            question: "定义新工具类推荐？",
+            options: ["只写全局 .my-btn {}", "@utility", "inline style", "jQuery addClass random"],
+            answer: 1,
+            explain: "@utility 接入 Tailwind 变体体系。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "accessibility",
+    title: "无障碍",
+    summary: "焦点、对比度、sr-only、运动偏好。",
+    level: "实战",
+    track: "工程",
+    minutes: 9,
+    blocks: [
+      {
+        type: "text",
+        title: "Accessibility",
+        body: "官网与生产实践：\n• focus-visible:ring 保证键盘可见焦点\n• 颜色对比达标（text-muted 勿过淡）\n• sr-only 提供读屏文本\n• motion-reduce:transition-none\n• 不要用 div 冒充 button 却不处理键盘\n• forced-colors 场景关注 forced-color-adjust",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<button class="rounded-lg bg-sky-500 px-4 py-2 text-white
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300
+  motion-reduce:transition-none">
+  <span class="sr-only">关闭对话框</span>
+  OK
+</button>`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ac1",
+            question: "键盘焦点环更推荐？",
+            options: ["outline-none 永久", "focus-visible:ring-*", "只有 hover 边框", "title 属性"],
+            answer: 1,
+            explain: "focus-visible 避免鼠标点击残留粗环。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "svg",
+    title: "SVG 样式",
+    summary: "fill / stroke / size 与 currentColor。",
+    level: "入门",
+    track: "视觉",
+    minutes: 7,
+    blocks: [
+      {
+        type: "text",
+        title: "SVG",
+        body: "fill-sky-500、stroke-slate-400、stroke-2。图标常用 text-current + fill-current 跟随文字色。size-5 控制图标盒。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<svg class="size-6 fill-none stroke-current stroke-2 text-sky-400" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" />
+</svg>`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sv1",
+            question: "图标跟随文字颜色？",
+            options: ["fill-auto", "fill-current / text-*", "stroke-parent", "color-inherit-svg"],
+            answer: 1,
+            explain: "currentColor 体系。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "scroll",
+    title: "滚动与 Snap",
+    summary: "scroll-smooth、snap、scroll-mt。",
+    level: "进阶",
+    track: "交互",
+    minutes: 8,
+    blocks: [
+      {
+        type: "text",
+        title: "Interactivity · scroll",
+        body: "scroll-smooth、scroll-mt-*（锚点避开吸顶导航）、snap-x snap-mandatory、snap-center、overscroll-contain。\n\n落地页分区导航常用 scroll-mt-20。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<div class="flex snap-x snap-mandatory gap-3 overflow-x-auto">
+  <div class="w-64 shrink-0 snap-center rounded-xl bg-slate-800 p-4">1</div>
+  <div class="w-64 shrink-0 snap-center rounded-xl bg-slate-800 p-4">2</div>
+</div>`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sc1",
+            question: "横向吸附滚动？",
+            options: ["scroll-x-only", "snap-x snap-mandatory", "overflow-snap", "carousel:true"],
+            answer: 1,
+            explain: "snap 类型 + 子项 snap-center/start。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "tables",
+    title: "表格样式",
+    summary: "table-auto、边框合并、对齐。",
+    level: "入门",
+    track: "布局",
+    minutes: 7,
+    blocks: [
+      {
+        type: "text",
+        title: "Tables",
+        body: "table-auto / table-fixed、border-collapse、border-spacing、caption-side。配合 divide-y 与 text-left 做数据表。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "html",
+        code: `<table class="w-full table-auto border-collapse text-sm">
+  <thead class="text-left text-slate-400">
+    <tr class="border-b border-slate-700"><th class="py-2">Name</th><th>Role</th></tr>
+  </thead>
+  <tbody class="divide-y divide-slate-800">
+    <tr><td class="py-2">Ada</td><td>Engineer</td></tr>
+  </tbody>
+</table>`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tb1",
+            question: "固定列宽算法？",
+            options: ["table-auto", "table-fixed", "table-lock", "cols-fixed"],
+            answer: 1,
+            explain: "table-fixed 使用固定布局。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "reusing-styles",
+    title: "复用样式",
+    summary: "组件化、cn()、@apply 边界。",
+    level: "进阶",
+    track: "工程",
+    minutes: 9,
+    blocks: [
+      {
+        type: "text",
+        title: "Reusing styles（官网核心概念）",
+        body: "官方推荐顺序：\n1. 抽成框架组件（React/Vue）传 className\n2. 用 cn/twMerge 合并冲突\n3. 必要时 @utility / @apply\n\n不要复制 20 行 class 到 15 个文件还不抽组件。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · cn",
+        lang: "tsx",
+        code: `export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+<button className={cn("rounded-lg px-3 py-2", active && "bg-sky-500 text-white")} />`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "rs1",
+            question: "class 冲突合并？",
+            options: ["字符串相加即可", "tailwind-merge / cn()", "随机", "不用 Tailwind"],
+            answer: 1,
+            explain: "twMerge 理解 utility 冲突。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "detecting-classes",
+    title: "类名检测与动态类",
+    summary: "内容扫描、安全列表、动态拼接陷阱。",
+    level: "进阶",
+    track: "工程",
+    minutes: 8,
+    blocks: [
+      {
+        type: "text",
+        title: "Detecting classes in source files",
+        body: "Tailwind 通过扫描源码提取完整类名字符串。动态拼接常失败：\n\n坏：`bg-${color}-500`\n好：完整字面量映射表 `color === 'sky' ? 'bg-sky-500' : 'bg-indigo-500'`\n\n额外路径用 @source；极端用 safelist（v3）或保证源码出现完整类名。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "tsx",
+        code: `const map = {
+  sky: "bg-sky-500",
+  indigo: "bg-indigo-500",
+} as const;
+
+<div className={map[hue]} />`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "dc1",
+            question: "为何避免 bg-${x}-500？",
+            options: ["语法非法", "扫描器看不到完整类名", "浏览器禁止", "只在 Vue 失败"],
+            answer: 1,
+            explain: "静态分析需要完整字面量。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "editor-setup",
+    title: "编辑器与 DX",
+    summary: "IntelliSense、Prettier 插件、排序。",
+    level: "入门",
+    track: "工程",
+    minutes: 7,
+    blocks: [
+      {
+        type: "text",
+        title: "Editor setup",
+        body: "官方推荐：\n• VS Code Tailwind CSS IntelliSense\n• Prettier plugin 自动排序 class\n• 保存时格式化\n\n团队一致的 class 顺序能大幅降低 diff 噪音。",
+      },
+      {
+        type: "tip",
+        body: "本教程站本身即可当「可读的 class 范例库」——复制 Demo 源码到项目里改。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ed1",
+            question: "自动排序 class 常用？",
+            options: ["eslint-only", "Prettier Tailwind 插件", "手动每次", "webpack plugin 必须"],
+            answer: 1,
+            explain: "prettier-plugin-tailwindcss。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "upgrade-guide",
+    title: "从 v3 升级到 v4",
+    summary: "配置迁移、废弃项、兼容层。",
+    level: "进阶",
+    track: "工程",
+    minutes: 10,
+    blocks: [
+      {
+        type: "text",
+        title: "Upgrade",
+        body: "v4 重点变化：\n• CSS-first @theme 替代大部分 tailwind.config 主题扩展\n• 新引擎，性能大幅提升\n• 部分工具类更名/行为调整（以官网 Upgrade guide 为准）\n• @config 可继续指向旧 JS 配置做迁移\n\n建议：新项目直接 v4；旧项目按官方 upgrade 工具逐步迁。",
+      },
+      {
+        type: "code",
+        title: "心智对照",
+        lang: "css",
+        code: `/* v3 theme.extend.colors.brand */
+/* v4 */
+@theme {
+  --color-brand: #38bdf8;
+}`,
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "up1",
+            question: "v4 主题扩展主战场？",
+            options: ["only JS config forever", "@theme in CSS", "inline style", "HTML data-theme only"],
+            answer: 1,
+            explain: "CSS-first @theme。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "official-map",
+    title: "对照官网地图",
+    summary: "文档导航、Reference、本站如何配合。",
+    level: "入门",
+    track: "基础",
+    minutes: 6,
+    blocks: [
+      {
+        type: "text",
+        title: "和官网怎么分工",
+        body: "官网 tailwindcss.com/docs：权威 API、每个工具类的完整表。\n\n本站 learning-tailwind：中文学习路径、交互 Demo、测验、Playground、设计工坊、进度系统。\n\n建议：本站学概念 → 本站 Reference 速查 → 官网查边缘参数与兼容性。\n\n说明：官网目前未在生产环境提供 /llms.txt（社区讨论与草案分支存在）；本站提供 /llms.txt 便于 AI 阅读本课程大纲。",
+      },
+      {
+        type: "tip",
+        body: "打开侧栏「工具类 Reference」可按分类浏览 170+ 条目，并外链到官网对应页。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "om1",
+            question: "查某个工具类完整参数表优先？",
+            options: ["只靠记忆", "官网 docs 单页 + 本站 Reference", "随机博客", "只看推特"],
+            answer: 1,
+            explain: "官网权威，本站辅助学习。",
+          },
+        ],
+      },
+    ],
+  },
+
 ];
 
 export const TRACKS = [
   "基础",
   "布局",
+  "视觉",
   "交互",
+  "进阶语法",
   "主题",
   "组件",
+  "工程",
   "实战",
 ] as const;
 

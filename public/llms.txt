@@ -1,0 +1,55 @@
+# learning-tailwind
+
+> 交互式中文 Tailwind CSS（v4）教程站：课程 + Demo + 测验 + Playground + 设计工坊 + 工具类 Reference。
+> 姊妹项目：https://github.com/xiaoqianran/learning-vue3
+> 仓库：https://github.com/xiaoqianran/learning-tailwind
+> 在线：https://xiaoqianran.github.io/learning-tailwind/
+
+本文件帮助 LLM / 代理快速理解本站结构与学习路径。权威 API 仍以官网为准：https://tailwindcss.com/docs
+
+## 关于官网 llms.txt
+
+- 生产环境 `https://tailwindcss.com/llms.txt` 当前返回不可用（社区讨论中 Tailwind 对公开 llms.txt 持谨慎态度）。
+- 官方仓库曾有草案分支 `md-endpoints` 提供浓缩 v4 参考（Core Syntax / Variants / Theme / Directives / Utilities）。
+- 本站 Reference 页与课程在主题覆盖上对齐该草案与官网 docs 导航，但**不是**官方镜像；参数表以官网单页为准。
+
+## 本站模块
+
+| 路径 | 说明 |
+|------|------|
+| `/` | 课程大纲、搜索、路径筛选、进度 |
+| `/lesson/:slug` | 讲解 + 源码 + Live Demo + 测验 + 笔记 |
+| `/reference` | 工具类全表（可搜索，外链官网） |
+| `/cheatsheet` | 速查表 |
+| `/playground` | HTML + Tailwind CDN 即时预览 |
+| `/studio` | 设计工坊闯关 |
+| `/hub` | 学习中心（打卡/收藏/笔记） |
+| `/lab` | 综合抽题 |
+| `/mistakes` | 错题本 |
+| `/certificate` | 结业证明 |
+| `/llms.txt` | 本文件 |
+
+## 学习路径（tracks）
+
+基础 → 布局 → 视觉 → 交互 → 进阶语法 → 主题 → 组件 → 工程 → 实战
+
+建议顺序与官网 Core concepts 对应：
+1. Utility-first / 安装 / 颜色间距排版
+2. Flex Grid 定位 边框
+3. 状态 响应式 暗色 动画 变换
+4. 任意值 变体进阶 容器查询 指令
+5. 组件与工程化（cn、类名扫描、无障碍、升级）
+
+## 技术栈
+
+React 19, TanStack Start/Router, Vite, Tailwind CSS v4, Zustand（localStorage 进度）
+
+## 进度隐私
+
+进度、笔记、错题仅存浏览器 localStorage，不上传服务器。
+
+## 给 AI 的使用建议
+
+- 教用户写 UI 时：优先完整类名字面量，避免 `bg-${color}-500` 动态拼接。
+- 解释概念时：可引用本站课程 slug；查精确 CSS 输出时打开官网 `/docs/<utility>`。
+- 生成代码时：遵循 mobile-first、`focus-visible`、设计令牌优先于任意值。
