@@ -1,60 +1,98 @@
 # learning-tailwind
 
-> 交互式中文 Tailwind CSS（v4）教程站：课程 + Demo + 测验 + Playground + 设计工坊 + 工具类 Reference。
-> 姊妹项目：https://github.com/xiaoqianran/learning-vue3
-> 仓库：https://github.com/xiaoqianran/learning-tailwind
-> 在线：https://xiaoqianran.github.io/learning-tailwind/
+> 交互式中文 Tailwind CSS 教程：讲解 + 源码 + Live Demo + 测验 + Playground + 工坊 + 官方参考目录。
+> 官方 **暂无** `llms.txt`。权威以 [tailwindcss.com/docs](https://tailwindcss.com/docs) 为准；本站自建索引。
 
-本文件帮助 LLM / 代理快速理解本站结构与学习路径。权威 API 仍以官网为准：https://tailwindcss.com/docs
+完整上下文（全文）：[https://xiaoqianran.github.io/learning-tailwind/llms-full.txt](https://xiaoqianran.github.io/learning-tailwind/llms-full.txt)
 
-## 官网文档迁移
+## 官方权威（务必优先）
 
-`/docs` 按官网 `docs/index.tsx` 完整收录全部文档页。草案全文见 `/llms-full.txt`。
+- [Tailwind CSS Docs](https://tailwindcss.com/docs)
+- [Installation](https://tailwindcss.com/docs/installation)
+- [Utility-first fundamentals](https://tailwindcss.com/docs/styling-with-utility-classes)
+- [Core concepts](https://tailwindcss.com/docs/hover-focus-and-other-states)
+- [Configuration / Theme](https://tailwindcss.com/docs/theme)
+- [Play CDN / Playground](https://play.tailwindcss.com/)
 
-## 关于官网 llms.txt
+## 站点入口
 
-- 生产环境 `https://tailwindcss.com/llms.txt` 当前返回不可用（社区讨论中 Tailwind 对公开 llms.txt 持谨慎态度）。
-- 官方仓库曾有草案分支 `md-endpoints` 提供浓缩 v4 参考（Core Syntax / Variants / Theme / Directives / Utilities）。
-- 本站 Reference 页与课程在主题覆盖上对齐该草案与官网 docs 导航，但**不是**官方镜像；参数表以官网单页为准。
+- [首页大纲](https://xiaoqianran.github.io/learning-tailwind/)
+- [文档地图](https://xiaoqianran.github.io/learning-tailwind/docs)
+- [参考目录](https://xiaoqianran.github.io/learning-tailwind/reference)
+- [Playground](https://xiaoqianran.github.io/learning-tailwind/playground)
+- [工坊](https://xiaoqianran.github.io/learning-tailwind/studio)
+- [速查表](https://xiaoqianran.github.io/learning-tailwind/cheatsheet)
+- [学习中心](https://xiaoqianran.github.io/learning-tailwind/hub)
+- [结业证明](https://xiaoqianran.github.io/learning-tailwind/certificate)
 
-## 本站模块
+## 课程 · 基础
 
-| 路径 | 说明 |
-|------|------|
-| `/` | 课程大纲、搜索、路径筛选、进度 |
-| `/lesson/:slug` | 讲解 + 源码 + Live Demo + 测验 + 笔记 |
-| `/docs` | **官网侧栏 1:1 全量目录**（196 页，中文索引） |
-| `/reference` | 工具类 Reference（草案 utilities + 语法） |
-| `/cheatsheet` | 速查表 |
-| `/playground` | HTML + Tailwind CDN 即时预览 |
-| `/studio` | 设计工坊闯关 |
-| `/hub` | 学习中心（打卡/收藏/笔记） |
-| `/lab` | 综合抽题 |
-| `/mistakes` | 错题本 |
-| `/certificate` | 结业证明 |
-| `/llms.txt` | 本文件 |
+- [Tailwind 是什么](https://xiaoqianran.github.io/learning-tailwind/lesson/intro): Utility-first：用类名组合界面。（入门 · 6 分钟）
+- [安装与配置](https://xiaoqianran.github.io/learning-tailwind/lesson/setup): Vite + Tailwind v4 快速起步。（入门 · 8 分钟）
+- [工具类思维](https://xiaoqianran.github.io/learning-tailwind/lesson/utility-first): 从「写 CSS 文件」到「组合 class」。（入门 · 8 分钟）
+- [颜色系统](https://xiaoqianran.github.io/learning-tailwind/lesson/colors): 色阶、透明度与语义色。（入门 · 8 分钟）
+- [间距系统](https://xiaoqianran.github.io/learning-tailwind/lesson/spacing): p / m / gap 与 4px 刻度。（入门 · 7 分钟）
+- [文字排版](https://xiaoqianran.github.io/learning-tailwind/lesson/typography): 字号、字重、行高、截断。（入门 · 8 分钟）
+- [宽高与尺寸](https://xiaoqianran.github.io/learning-tailwind/lesson/sizing): w/h、min/max、aspect。（入门 · 7 分钟）
+- [对照官网地图](https://xiaoqianran.github.io/learning-tailwind/lesson/official-map): 文档导航、Reference、本站如何配合。（入门 · 6 分钟）
+- [Preflight 基础重置](https://xiaoqianran.github.io/learning-tailwind/lesson/preflight): 官网 Base styles：modern-normalize 与默认边距。（入门 · 7 分钟）
 
-## 学习路径（tracks）
+## 课程 · 布局
 
-基础 → 布局 → 视觉 → 交互 → 进阶语法 → 主题 → 组件 → 工程 → 实战
+- [Flex 布局](https://xiaoqianran.github.io/learning-tailwind/lesson/flex): flex、对齐、换行、增长。（入门 · 10 分钟）
+- [Grid 布局](https://xiaoqianran.github.io/learning-tailwind/lesson/grid): 多列、自适应、跨列。（入门 · 10 分钟）
+- [定位与层级](https://xiaoqianran.github.io/learning-tailwind/lesson/position): relative / absolute / sticky / z。（进阶 · 8 分钟）
+- [边框 · 圆角 · 阴影](https://xiaoqianran.github.io/learning-tailwind/lesson/borders): 表面质感三件套。（入门 · 8 分钟）
+- [表格样式](https://xiaoqianran.github.io/learning-tailwind/lesson/tables): table-auto、边框合并、对齐。（入门 · 7 分钟）
+- [Display · Overflow · Object · Columns](https://xiaoqianran.github.io/learning-tailwind/lesson/layout-display): 官网 Layout：display/float/overflow/object-fit/columns。（入门 · 11 分钟）
 
-建议顺序与官网 Core concepts 对应：
-1. Utility-first / 安装 / 颜色间距排版
-2. Flex Grid 定位 边框
-3. 状态 响应式 暗色 动画 变换
-4. 任意值 变体进阶 容器查询 指令
-5. 组件与工程化（cn、类名扫描、无障碍、升级）
+## 课程 · 视觉
 
-## 技术栈
+- [背景与渐变](https://xiaoqianran.github.io/learning-tailwind/lesson/backgrounds): bg-color / gradient / clip / attachment。（入门 · 10 分钟）
+- [阴影 · 透明度 · 混合](https://xiaoqianran.github.io/learning-tailwind/lesson/effects): box-shadow、text-shadow、opacity、mix-blend。（入门 · 9 分钟）
+- [滤镜与 Backdrop](https://xiaoqianran.github.io/learning-tailwind/lesson/filters): blur / brightness / backdrop-blur。（进阶 · 8 分钟）
+- [SVG 样式](https://xiaoqianran.github.io/learning-tailwind/lesson/svg): fill / stroke / size 与 currentColor。（入门 · 7 分钟）
+- [Mask 遮罩](https://xiaoqianran.github.io/learning-tailwind/lesson/masks): 官网 Effects：mask-image 与相关属性。（进阶 · 8 分钟）
 
-React 19, TanStack Start/Router, Vite, Tailwind CSS v4, Zustand（localStorage 进度）
+## 课程 · 交互
 
-## 进度隐私
+- [状态变体](https://xiaoqianran.github.io/learning-tailwind/lesson/states): hover / focus / active / disabled。（进阶 · 9 分钟）
+- [响应式设计](https://xiaoqianran.github.io/learning-tailwind/lesson/responsive): sm / md / lg 移动优先。（进阶 · 10 分钟）
+- [过渡与动画](https://xiaoqianran.github.io/learning-tailwind/lesson/animation): transition、duration、animate。（进阶 · 8 分钟）
+- [变换 Transforms](https://xiaoqianran.github.io/learning-tailwind/lesson/transforms): scale / rotate / translate / skew。（进阶 · 9 分钟）
+- [滚动与 Snap](https://xiaoqianran.github.io/learning-tailwind/lesson/scroll): scroll-smooth、snap、scroll-mt。（进阶 · 8 分钟）
 
-进度、笔记、错题仅存浏览器 localStorage，不上传服务器。
+## 课程 · 进阶语法
 
-## 给 AI 的使用建议
+- [任意值与修饰符](https://xiaoqianran.github.io/learning-tailwind/lesson/arbitrary): [] 任意值、/opacity、!important、CSS 变量简写。（进阶 · 10 分钟）
+- [变体进阶](https://xiaoqianran.github.io/learning-tailwind/lesson/variants-deep): group / peer / has / not / nth / ARIA。（进阶 · 12 分钟）
+- [容器查询](https://xiaoqianran.github.io/learning-tailwind/lesson/container-queries): @container 与 @ 变体。（进阶 · 10 分钟）
 
-- 教用户写 UI 时：优先完整类名字面量，避免 `bg-${color}-500` 动态拼接。
-- 解释概念时：可引用本站课程 slug；查精确 CSS 输出时打开官网 `/docs/<utility>`。
-- 生成代码时：遵循 mobile-first、`focus-visible`、设计令牌优先于任意值。
+## 课程 · 主题
+
+- [暗色模式](https://xiaoqianran.github.io/learning-tailwind/lesson/dark-mode): class 策略与 dark: 前缀。（进阶 · 8 分钟）
+- [自定义主题](https://xiaoqianran.github.io/learning-tailwind/lesson/custom): @theme 令牌与扩展。（进阶 · 9 分钟）
+- [Tailwind v4 要点](https://xiaoqianran.github.io/learning-tailwind/lesson/v4): CSS-first、性能、兼容。（进阶 · 8 分钟）
+- [指令与函数](https://xiaoqianran.github.io/learning-tailwind/lesson/directives): @import @theme @utility @apply --spacing()。（进阶 · 11 分钟）
+- [添加自定义样式](https://xiaoqianran.github.io/learning-tailwind/lesson/custom-styles): 官网 Adding custom styles 全链路。（进阶 · 10 分钟）
+
+## 课程 · 组件
+
+- [表单样式](https://xiaoqianran.github.io/learning-tailwind/lesson/forms): input / label / 校验态。（进阶 · 9 分钟）
+- [实战：卡片组件](https://xiaoqianran.github.io/learning-tailwind/lesson/card-ui): 组合出产品级卡片。（实战 · 10 分钟）
+- [实战：导航栏](https://xiaoqianran.github.io/learning-tailwind/lesson/navbar): 顶栏 + 移动菜单模式。（实战 · 10 分钟）
+
+## 课程 · 工程
+
+- [无障碍](https://xiaoqianran.github.io/learning-tailwind/lesson/accessibility): 焦点、对比度、sr-only、运动偏好。（实战 · 9 分钟）
+- [复用样式](https://xiaoqianran.github.io/learning-tailwind/lesson/reusing-styles): 组件化、cn()、@apply 边界。（进阶 · 9 分钟）
+- [类名检测与动态类](https://xiaoqianran.github.io/learning-tailwind/lesson/detecting-classes): 内容扫描、安全列表、动态拼接陷阱。（进阶 · 8 分钟）
+- [编辑器与 DX](https://xiaoqianran.github.io/learning-tailwind/lesson/editor-setup): IntelliSense、Prettier 插件、排序。（入门 · 7 分钟）
+- [从 v3 升级到 v4](https://xiaoqianran.github.io/learning-tailwind/lesson/upgrade-guide): 配置迁移、废弃项、兼容层。（进阶 · 10 分钟）
+- [浏览器兼容](https://xiaoqianran.github.io/learning-tailwind/lesson/compatibility): 官网 Compatibility：现代 CSS 基线。（进阶 · 7 分钟）
+
+## 课程 · 实战
+
+- [实战：仪表盘布局](https://xiaoqianran.github.io/learning-tailwind/lesson/dashboard): 侧栏 + 主区 + 统计卡。（实战 · 12 分钟）
+- [常用模式速通](https://xiaoqianran.github.io/learning-tailwind/lesson/patterns): 空状态、加载、标签、分割。（实战 · 8 分钟）
+- [生产与最佳实践](https://xiaoqianran.github.io/learning-tailwind/lesson/production): 体积、可维护、无障碍。（实战 · 9 分钟）

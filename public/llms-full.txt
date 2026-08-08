@@ -1,1671 +1,1834 @@
-# Tailwind CSS v4 Reference
+# learning-tailwind — full curriculum
 
-## Quick Start
+生成自本站 45 课。class 语义以 tailwindcss.com 为准。
+
+---
+
+# Tailwind 是什么
+
+- slug: `intro`
+- track: 基础
+- level: 入门
+- minutes: 6
+
+### 为什么学 Tailwind
+
+Tailwind CSS 是工具类优先（utility-first）的 CSS 框架：不写「.card 长什么样」，而是直接在 HTML 上拼 padding、颜色、圆角。
+
+好处：设计系统内建（间距刻度、色阶、断点一致）、改样式不用在 CSS 文件里翻找、配合组件化框架非常顺手。
+
+学习方法：先看「对应源码」里的 class，再点 Demo 看视觉结果。
+
+
+### 对应源码 · 按钮
+
+```html
+<button class="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
+  保存
+</button>
+```
+
+
+**交互 Demo：** 动手：拼一个按钮（kind: `utility-first`）
+
+
+**测验：**
+- Q: Tailwind 核心思路？
+  - [ ] 写一堆语义化 CSS 文件
+  - [✓] 用原子工具类组合样式
+  - [ ] 只做预处理器
+  - [ ] 替代 JavaScript
+  - 解析: Utility-first：在标记上组合小类。
+- Q: Tailwind 与 Bootstrap 的主要区别？
+  - [ ] 没有区别
+  - [ ] Tailwind 提供组件而不是工具类
+  - [✓] Tailwind 以工具类为主，组件需自建
+  - [ ] Tailwind 不能响应式
+  - 解析: Bootstrap 偏组件库；Tailwind 偏设计令牌 + 工具类。
+
+
+---
+
+# 安装与配置
+
+- slug: `setup`
+- track: 基础
+- level: 入门
+- minutes: 8
+
+### v4 的最小配置
+
+Tailwind v4 用 CSS-first 配置：在入口 CSS 里 @import "tailwindcss"，用 Vite 插件 @tailwindcss/vite 即可。设计令牌写在 @theme { } 里。
+
+本站就是 React + Vite + Tailwind v4，你现在看到的界面本身就是活教材。
+
+
+### styles.css · 最小示例
 
 ```css
 @import "tailwindcss";
+
+@theme {
+  --color-brand: #38bdf8;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+/* 之后就能用 bg-brand、font-sans 等 */
 ```
 
+
+> **提示：** 开发时用 Vite HMR；生产构建会 purge 未使用的类，最终 CSS 体积通常很小。
+
+
+**测验：**
+- Q: Tailwind v4 推荐配置方式？
+  - [ ] 只写 tailwind.config.js
+  - [✓] CSS 中 @import + @theme
+  - [ ] 必须用 PostCSS 插件名 postcss-tailwind
+  - [ ] 全局 style 标签手写
+  - 解析: v4 强调 CSS-first：@import "tailwindcss" 与 @theme。
+- Q: 未使用的工具类在生产构建中？
+  - [ ] 全部打入
+  - [✓] 被扫描剔除
+  - [ ] 变成 inline
+  - [ ] 报错
+  - 解析: 基于源码扫描，未用到的 utility 不会进入产物。
+
+
+---
+
+# 工具类思维
+
+- slug: `utility-first`
+- track: 基础
+- level: 入门
+- minutes: 8
+
+### 读 class 的顺序
+
+常见阅读顺序：布局（flex/grid）→ 尺寸间距（p/m/w/h）→ 排版（text/font）→ 颜色（bg/text）→ 效果（rounded/shadow）→ 状态（hover:）。
+
+不要害怕 class 变长：可抽组件、用 cn() 合并、或在 @layer components 用 @apply。
+
+
+### 对应源码 · 信息卡片
+
 ```html
-<div class="flex items-center gap-4 p-6 bg-white rounded-xl shadow-lg">
-  <img class="size-12 rounded-full" src="..." />
-  <div class="text-lg font-medium text-gray-900">Hello World</div>
+<div class="rounded-xl border border-slate-700 bg-slate-900 p-4 shadow-lg">
+  <h3 class="text-lg font-semibold text-white">标题</h3>
+  <p class="mt-1 text-sm text-slate-400">说明文字</p>
 </div>
 ```
 
----
 
-## Core Syntax
+**交互 Demo：** 动手：工具类组合（kind: `utility-first`）
 
-| Pattern | Example | Description |
-|---------|---------|-------------|
-| `{utility}` | `flex` | Base utility |
-| `{variant}:{utility}` | `hover:bg-blue-500` | Conditional application |
-| `{utility}-{value}` | `p-4`, `text-lg` | Value from scale |
-| `{utility}-[{value}]` | `p-[13px]`, `grid-cols-[1fr_2fr]` | Arbitrary value |
-| `{utility}-(--var)` | `p-(--my-spacing)` | CSS variable shorthand |
-| `{utility}-({type}:--var)` | `text-(color:--my-var)` | Type hint + variable shorthand |
-| `{utility}-[{type}:{value}]` | `text-[color:var(--my-var)]` | Type hint for arbitrary values |
-| `{utility}/{opacity}` | `bg-black/50`, `text-white/75` | Opacity modifier |
-| `-{utility}` | `-mt-4`, `-translate-x-2` | Negative value |
-| `{utility}!` | `hidden!`, `flex!` | !important modifier |
 
-### Stacking Variants
-Variants stack left-to-right: `dark:md:hover:bg-blue-500`
+**测验：**
+- Q: class 过长时更好的做法？
+  - [ ] 放弃 Tailwind
+  - [✓] 抽成组件 / cn() / @apply
+  - [ ] 只用一个 div
+  - [ ] 写内联 style 全量
+  - 解析: 复用组件边界，而不是回到大 CSS 文件。
 
-### Type Hints
-When a utility namespace is ambiguous (e.g., `text-*` maps to both `font-size` and `color`), use type hints:
-- `text-(length:--my-var)` or `text-[length:var(--my-var)]` → `font-size`
-- `text-(color:--my-var)` or `text-[color:var(--my-var)]` → `color`
-- `bg-(url:--my-img)` or `bg-[url:var(--my-img)]` → `background-image`
 
 ---
 
-## Variants Reference
+# 颜色系统
 
-### Pseudo-classes
+- slug: `colors`
+- track: 基础
+- level: 入门
+- minutes: 8
 
-| Variant | Selector |
-|---------|----------|
-| `hover` | `:hover` |
-| `focus` | `:focus` |
-| `focus-within` | `:focus-within` |
-| `focus-visible` | `:focus-visible` |
-| `active` | `:active` |
-| `visited` | `:visited` |
-| `target` | `:target` |
-| `first` | `:first-child` |
-| `last` | `:last-child` |
-| `only` | `:only-child` |
-| `odd` | `:nth-child(odd)` |
-| `even` | `:nth-child(even)` |
-| `first-of-type` | `:first-of-type` |
-| `last-of-type` | `:last-of-type` |
-| `only-of-type` | `:only-of-type` |
-| `nth-{n}` | `:nth-child({n})` |
-| `nth-last-{n}` | `:nth-last-child({n})` |
-| `nth-of-type-{n}` | `:nth-of-type({n})` |
-| `nth-last-of-type-{n}` | `:nth-last-of-type({n})` |
-| `empty` | `:empty` |
-| `disabled` | `:disabled` |
-| `enabled` | `:enabled` |
-| `checked` | `:checked` |
-| `indeterminate` | `:indeterminate` |
-| `default` | `:default` |
-| `optional` | `:optional` |
-| `required` | `:required` |
-| `valid` | `:valid` |
-| `invalid` | `:invalid` |
-| `user-valid` | `:user-valid` |
-| `user-invalid` | `:user-invalid` |
-| `in-range` | `:in-range` |
-| `out-of-range` | `:out-of-range` |
-| `placeholder-shown` | `:placeholder-shown` |
-| `autofill` | `:autofill` |
-| `read-only` | `:read-only` |
-| `has-*` | `:has()` — e.g., `has-[:checked]`, `has-[img]`, `has-checked` |
-| `not-*` | `:not()` — e.g., `not-hover`, `not-focus`, `not-disabled` |
+### 内置色板
 
-### Pseudo-elements
+Tailwind 自带 slate/gray/zinc/neutral/stone 中性色与 red…rose 等彩色，每色 50–950。写法：bg-sky-500、text-slate-300、border-white/10。
 
-| Variant | Selector |
-|---------|----------|
-| `before` | `::before` (auto adds `content: ''`) |
-| `after` | `::after` (auto adds `content: ''`) |
-| `placeholder` | `::placeholder` |
-| `file` | `::file-selector-button` |
-| `marker` | `::marker` |
-| `selection` | `::selection` |
-| `first-line` | `::first-line` |
-| `first-letter` | `::first-letter` |
-| `backdrop` | `::backdrop` |
-| `details-content` | `::details-content` |
+斜杠透明度：bg-sky-500/20 = 20% 不透明度。自定义色写进 @theme 后可直接 bg-brand。
 
-### Media Queries
 
-| Variant | Media Query |
-|---------|-------------|
-| `sm` | `width >= 40rem` (640px) |
-| `md` | `width >= 48rem` (768px) |
-| `lg` | `width >= 64rem` (1024px) |
-| `xl` | `width >= 80rem` (1280px) |
-| `2xl` | `width >= 96rem` (1536px) |
-| `max-sm` | `width < 40rem` |
-| `max-md` | `width < 48rem` |
-| `max-lg` | `width < 64rem` |
-| `max-xl` | `width < 80rem` |
-| `max-2xl` | `width < 96rem` |
-| `min-[{value}]` | `width >= {value}` |
-| `max-[{value}]` | `width < {value}` |
-| `dark` | `prefers-color-scheme: dark` |
-| `light` | `prefers-color-scheme: light` |
-| `motion-safe` | `prefers-reduced-motion: no-preference` |
-| `motion-reduce` | `prefers-reduced-motion: reduce` |
-| `contrast-more` | `prefers-contrast: more` |
-| `contrast-less` | `prefers-contrast: less` |
-| `forced-colors` | `forced-colors: active` |
-| `not-forced-colors` | `forced-colors: none` |
-| `inverted-colors` | `inverted-colors: inverted` |
-| `portrait` | `orientation: portrait` |
-| `landscape` | `orientation: landscape` |
-| `print` | `print` |
-| `noscript` | `scripting: none` |
-| `pointer-fine` | `pointer: fine` |
-| `pointer-coarse` | `pointer: coarse` |
-| `pointer-none` | `pointer: none` |
-| `any-pointer-fine` | `any-pointer: fine` |
-| `any-pointer-coarse` | `any-pointer: coarse` |
+### 对应源码 · 色块
 
-Negate with `not-` prefix: `not-dark`, `not-print`, `not-forced-colors`, etc.
-
-### Container Queries
-
-| Variant | Min-width |
-|---------|-----------|
-| `@3xs` | 16rem |
-| `@2xs` | 18rem |
-| `@xs` | 20rem |
-| `@sm` | 24rem |
-| `@md` | 28rem |
-| `@lg` | 32rem |
-| `@xl` | 36rem |
-| `@2xl` | 42rem |
-| `@3xl` | 48rem |
-| `@4xl` | 56rem |
-| `@5xl` | 64rem |
-| `@6xl` | 72rem |
-| `@7xl` | 80rem |
-| `@[{value}]` | `width >= {value}` |
-| `@max-[{value}]` | `width < {value}` |
-
-Container: `@container` class on parent, or `@container/{name}` for named containers.
-
-### State Variants
-
-| Variant | Description |
-|---------|-------------|
-| `open` | `<details>` or `<dialog>` is open, or `:popover-open` |
-| `inert` | Element has `inert` attribute |
-| `starting` | `@starting-style` for entry animations |
-
-### Parent/Sibling State
-
-**Group** (style based on parent):
 ```html
-<div class="group">
-  <span class="group-hover:text-blue-500">...</span>
+<div class="flex gap-2">
+  <span class="h-10 w-10 rounded-md bg-sky-500"></span>
+  <span class="h-10 w-10 rounded-md bg-sky-500/40"></span>
+  <span class="h-10 w-10 rounded-md bg-indigo-500"></span>
+  <span class="h-10 w-10 rounded-md text-white bg-slate-800 ring-1 ring-white/10"></span>
 </div>
 ```
-```css
-.group-hover\:text-blue-500 { &:is(:where(.group):hover *) { color: ... } }
-```
-- `group-hover`, `group-focus`, `group-active`, etc.
-- Named: `group/{name}` → `group-hover/{name}`
-- Arbitrary: `group-[.is-active]:block`
 
-**Peer** (style based on sibling):
+
+**交互 Demo：** 动手：切换主题色（kind: `colors`）
+
+
+**测验：**
+- Q: bg-sky-500/20 表示？
+  - [ ] 字体 20px
+  - [✓] 天空色 20% 不透明度
+  - [ ] 间距 20
+  - [ ] 动画 20ms
+  - 解析: 颜色/透明度 语法。
+- Q: 自定义品牌色应放在？
+  - [ ] 任意 .css 随便写
+  - [✓] @theme
+  - [ ] HTML style
+  - [ ] package.json
+  - 解析: @theme 定义设计令牌。
+
+
+---
+
+# 间距系统
+
+- slug: `spacing`
+- track: 基础
+- level: 入门
+- minutes: 7
+
+### 间距刻度
+
+默认 1 = 0.25rem（4px）。p-4 = 16px，gap-3 = 12px。方向：p/px/py/pt/pr/pb/pl，m 同理。负 margin 用 -mt-2。
+
+空间感靠一致的刻度：页面常用 4/6/8，卡片内 3/4，标题与正文 gap 用 mt-1 / mt-2。
+
+
+### 对应源码 · 间距
+
 ```html
-<input class="peer" />
-<span class="peer-invalid:text-red-500">...</span>
+<div class="space-y-3 p-6">
+  <div class="h-8 rounded bg-sky-500/30"></div>
+  <div class="flex gap-2">
+    <div class="h-8 flex-1 rounded bg-sky-500/50"></div>
+    <div class="h-8 flex-1 rounded bg-sky-500/70"></div>
+  </div>
+</div>
 ```
-```css
-.peer-invalid\:text-red-500 { &:is(:where(.peer):invalid ~ *) { color: ... } }
-```
-- `peer-hover`, `peer-focus`, `peer-invalid`, etc.
-- Named: `peer/{name}` → `peer-checked/{name}`
-- Note: peer must come BEFORE the styled element
 
-**In** (implicit group, no class needed on parent):
-- `in-hover`, `in-focus`, etc.
 
-Also: `group-has-*`, `peer-has-*` for styling based on descendants of group/peer.
+**交互 Demo：** 动手：调 padding / gap（kind: `spacing`）
 
-### Child Selectors
 
-| Variant | Description |
-|---------|-------------|
-| `*` | Direct children (`& > *`) |
-| `**` | All descendants (`& *`) |
+**测验：**
+- Q: p-4 默认等于？
+  - [ ] 4px
+  - [✓] 1rem / 16px
+  - [ ] 4rem
+  - [ ] 40px
+  - 解析: 1 unit = 0.25rem → 4 = 1rem。
 
-### ARIA States
-
-| Variant | Selector |
-|---------|----------|
-| `aria-busy` | `[aria-busy="true"]` |
-| `aria-checked` | `[aria-checked="true"]` |
-| `aria-disabled` | `[aria-disabled="true"]` |
-| `aria-expanded` | `[aria-expanded="true"]` |
-| `aria-hidden` | `[aria-hidden="true"]` |
-| `aria-pressed` | `[aria-pressed="true"]` |
-| `aria-readonly` | `[aria-readonly="true"]` |
-| `aria-required` | `[aria-required="true"]` |
-| `aria-selected` | `[aria-selected="true"]` |
-| `aria-[{attr}={value}]` | Arbitrary ARIA attribute |
-
-### Data Attributes
-
-- `data-{name}` → `[data-{name}]`
-- `data-[{name}={value}]` → `[data-{name}="{value}"]`
-
-### RTL/LTR
-
-| Variant | Description |
-|---------|-------------|
-| `rtl` | `[dir="rtl"]` |
-| `ltr` | `[dir="ltr"]` |
-
-### Feature Queries
-
-- `supports-[{feature}]:{utility}` → `@supports ({feature})`
-- `supports-[display:grid]:grid`
-- `not-supports-[{feature}]:{utility}`
-
-### Arbitrary Variants
-
-Custom selectors in brackets:
-- `[&.is-active]:bg-blue-500`
-- `[&_p]:mt-4` (underscore = space)
-- `[@media(min-width:900px)]:flex`
 
 ---
 
-## Theme System
+# 文字排版
 
-### @theme Directive
+- slug: `typography`
+- track: 基础
+- level: 入门
+- minutes: 8
 
-```css
-@import "tailwindcss";
+### 排版工具类
 
-@theme {
-  --color-brand: #3b82f6;
-  --font-display: "Inter", sans-serif;
-  --spacing: 0.25rem;
-}
-```
+text-sm / text-base / text-lg / text-2xl…  font-medium / font-semibold  leading-relaxed  tracking-tight。
 
-### Theme Namespaces
+截断：truncate（单行）或 line-clamp-2。对齐 text-left/center/right。数字表格感用 tabular-nums。
 
-| Namespace | Generates |
-|-----------|-----------|
-| `--color-*` | Color utilities: `bg-*`, `text-*`, `border-*`, `fill-*`, `stroke-*`, etc. |
-| `--font-*` | `font-*` utilities |
-| `--text-*` | `text-*` font-size utilities |
-| `--font-weight-*` | `font-*` weight utilities |
-| `--tracking-*` | `tracking-*` letter-spacing |
-| `--leading-*` | `leading-*` line-height |
-| `--breakpoint-*` | `sm:`, `md:`, etc. variants |
-| `--container-*` | `@sm:`, `@md:`, etc. + `max-w-*`, `w-*` |
-| `--spacing` | Base spacing multiplier for `p-*`, `m-*`, `gap-*`, `w-*`, `h-*`, etc. |
-| `--radius-*` | `rounded-*` utilities |
-| `--shadow-*` | `shadow-*` utilities |
-| `--inset-shadow-*` | `inset-shadow-*` utilities |
-| `--drop-shadow-*` | `drop-shadow-*` utilities |
-| `--text-shadow-*` | `text-shadow-*` utilities |
-| `--blur-*` | `blur-*` utilities |
-| `--perspective-*` | `perspective-*` utilities |
-| `--aspect-*` | `aspect-*` utilities |
-| `--ease-*` | `ease-*` timing functions |
-| `--animate-*` | `animate-*` animations |
 
-### Overriding Defaults
+### 对应源码 · 标题 + 正文
 
-```css
-@theme {
-  --color-*: initial;  /* Clear all default colors */
-  --*: initial;        /* Clear entire default theme */
-
-  /* Then define your own */
-  --color-primary: #3b82f6;
-}
-```
-
-### Animation Keyframes
-
-```css
-@theme {
-  --animate-fade-in: fade-in 0.3s ease-out;
-
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-}
-```
-
-Defining keyframes inside `@theme` ensures they are only emitted if the animation is used.
-
-### Theme Options
-
-**inline** — Inline values directly in utilities instead of using CSS variables:
-```css
-@theme inline {
-  --color-primary: #3b82f6;
-}
-/* bg-primary outputs: background-color: #3b82f6; */
-/* instead of: background-color: var(--color-primary); */
-```
-
-**static** — Always emit CSS variables, even if not used in any utility:
-```css
-@theme static {
-  --color-primary: #3b82f6;
-}
-/* Always emits: --color-primary: #3b82f6; in :root */
-```
-
----
-
-## Directives
-
-### @import
-Import CSS files, including Tailwind itself:
-```css
-@import "tailwindcss";
-```
-
-### @source
-Specify additional source files for class detection:
-```css
-@source "../node_modules/@my-company/ui-lib";
-```
-
-### @utility
-Define custom utilities that work with variants:
-```css
-@utility tab-4 {
-  tab-size: 4;
-}
-```
-
-### @variant
-Apply a Tailwind variant to styles in custom CSS:
-```css
-.my-element {
-  background: white;
-  @variant dark {
-    background: black;
-  }
-}
-```
-
-### @custom-variant
-Create a custom variant:
-```css
-@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
-```
-Usage: `theme-midnight:bg-black`
-
-### @apply
-Inline utility classes in custom CSS:
-```css
-.select2-dropdown {
-  @apply rounded-b-lg shadow-md;
-}
-```
-
-### @reference
-Import stylesheet for reference without emitting CSS (for Vue/Svelte `<style>` blocks, CSS modules):
-```css
-@reference "../../app.css";
-```
-
-### @plugin
-Load a JavaScript plugin (v3 compatibility):
-```css
-@plugin "@tailwindcss/typography";
-```
-
-### @config
-Load a legacy JavaScript config (v3 compatibility):
-```css
-@config "../../tailwind.config.js";
-```
-
----
-
-## Functions
-
-### --alpha()
-Adjust color opacity:
-```css
-color: --alpha(var(--color-lime-300) / 50%);
-/* Outputs: color-mix(in oklab, var(--color-lime-300) 50%, transparent) */
-```
-
-### --spacing()
-Generate spacing value from theme:
-```css
-margin: --spacing(4);
-/* Outputs: calc(var(--spacing) * 4) */
-```
-
-Useful in arbitrary values:
 ```html
-<div class="py-[calc(--spacing(4)-1px)]">
+<h2 class="text-2xl font-semibold tracking-tight text-white">
+  标题
+</h2>
+<p class="mt-2 max-w-prose text-sm leading-relaxed text-slate-400">
+  正文用稍小字号、更松行高，阅读更舒服。
+</p>
 ```
 
----
 
-## Utilities Reference
+**交互 Demo：** 动手：排版层级（kind: `typography`）
 
-### Layout
 
-#### display
-`block` `inline-block` `inline` `flex` `inline-flex` `grid` `inline-grid` `contents` `flow-root` `list-item` `hidden` (none)
-`table` `inline-table` `table-caption` `table-cell` `table-column` `table-column-group` `table-footer-group` `table-header-group` `table-row-group` `table-row`
-`sr-only` (screen-reader only) `not-sr-only`
+**测验：**
+- Q: 单行溢出省略用？
+  - [ ] text-clip
+  - [✓] truncate
+  - [ ] overflow-auto
+  - [ ] line-none
+  - 解析: truncate = overflow-hidden + text-ellipsis + whitespace-nowrap。
 
-#### position
-`static` `fixed` `absolute` `relative` `sticky`
-
-#### top / right / bottom / left / inset
-`{top|right|bottom|left|inset|inset-x|inset-y|start|end}-{n}` → spacing scale
-`{...}-auto` `{...}-full` (100%) `{...}-px` (1px)
-`{...}-{fraction}` → percentage (e.g., `top-1/2`)
-`{...}-[value]`
-Negative: `-{top|right|bottom|left|inset|inset-x|inset-y|start|end}-{n}`
-
-#### visibility
-`visible` `invisible` (hidden) `collapse`
-
-#### z-index
-`z-{n}` `z-auto` `z-[value]`
-
-#### float / clear
-`float-{left|right|none|start|end}`
-`clear-{left|right|both|none|start|end}`
-
-#### isolation
-`isolate` `isolation-auto`
-
-#### overflow
-`overflow-{auto|hidden|clip|visible|scroll}`
-`overflow-x-{...}` `overflow-y-{...}`
-
-#### overscroll-behavior
-`overscroll-{auto|contain|none}`
-`overscroll-x-{...}` `overscroll-y-{...}`
-
-#### object-fit
-`object-{contain|cover|fill|none|scale-down}`
-
-#### object-position
-`object-{top|bottom|left|right|center|top-left|top-right|bottom-left|bottom-right}`
-`object-[value]`
-
-#### aspect-ratio
-`aspect-auto` `aspect-square` (1/1) `aspect-video` (16/9)
-`aspect-{n}/{m}` `aspect-[value]`
-
-#### columns
-`columns-{n}` `columns-auto`
-`columns-{3xs|2xs|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl}`
-`columns-[value]`
-
-#### break-before / break-after
-`break-{before|after}-{auto|avoid|all|avoid-page|page|left|right|column}`
-
-#### break-inside
-`break-inside-{auto|avoid|avoid-page|avoid-column}`
-
-#### box-decoration-break
-`box-decoration-{clone|slice}`
-
-#### box-sizing
-`box-border` (border-box) `box-content` (content-box)
 
 ---
 
-### Flexbox & Grid
+# 宽高与尺寸
 
-#### flex-direction
-`flex-row` `flex-row-reverse` `flex-col` (column) `flex-col-reverse`
+- slug: `sizing`
+- track: 基础
+- level: 入门
+- minutes: 7
 
-#### flex-wrap
-`flex-wrap` `flex-wrap-reverse` `flex-nowrap`
+### 尺寸
 
-#### flex
-`flex-{n}` `flex-{fraction}` `flex-auto` `flex-initial` `flex-none`
-`flex-[value]`
+w-full、w-1/2、w-64、max-w-3xl、min-h-dvh、h-screen、size-10（宽高同值）、aspect-video。
 
-#### flex-grow
-`grow` (1) `grow-{n}` `grow-[value]`
+内容区常用 max-w-3xl / max-w-6xl + mx-auto 居中。
 
-#### flex-shrink
-`shrink` (1) `shrink-{n}` `shrink-[value]`
 
-#### flex-basis
-`basis-{n}` (spacing) `basis-auto` `basis-full` `basis-px`
-`basis-{fraction}` `basis-{3xs-7xl}` (container sizes)
-`basis-[value]`
+### 对应源码 · 居中内容
 
-#### order
-`order-{n}` `-order-{n}` `order-first` (-9999) `order-last` (9999) `order-none` (0)
-`order-[value]`
+```html
+<div class="mx-auto max-w-3xl px-4">
+  <div class="aspect-video w-full rounded-xl bg-slate-800"></div>
+</div>
+```
 
-#### grid-template-columns
-`grid-cols-{n}` (repeat(n, minmax(0, 1fr))) `grid-cols-none` `grid-cols-subgrid`
-`grid-cols-[value]` (e.g., `grid-cols-[200px_1fr_2fr]`)
 
-#### grid-template-rows
-`grid-rows-{n}` (repeat(n, minmax(0, 1fr))) `grid-rows-none` `grid-rows-subgrid`
-`grid-rows-[value]`
+**交互 Demo：** 动手：宽度与比例（kind: `sizing`）
 
-#### grid-column
-`col-span-{n}` `col-span-full`
-`col-start-{n}` `-col-start-{n}` `col-start-auto`
-`col-end-{n}` `-col-end-{n}` `col-end-auto`
-`col-{n}` `-col-{n}` `col-auto` `col-[value]`
 
-#### grid-row
-`row-span-{n}` `row-span-full`
-`row-start-{n}` `-row-start-{n}` `row-start-auto`
-`row-end-{n}` `-row-end-{n}` `row-end-auto`
-`row-{n}` `-row-{n}` `row-auto` `row-[value]`
+**测验：**
+- Q: size-10 等价于？
+  - [ ] font-size 10
+  - [✓] w-10 h-10
+  - [ ] padding 10
+  - [ ] z-index 10
+  - 解析: 宽高同为 2.5rem。
 
-#### grid-auto-flow
-`grid-flow-row` `grid-flow-col` `grid-flow-dense` `grid-flow-row-dense` `grid-flow-col-dense`
-
-#### grid-auto-columns
-`auto-cols-auto` `auto-cols-min` `auto-cols-max` `auto-cols-fr` (minmax(0, 1fr))
-`auto-cols-[value]`
-
-#### grid-auto-rows
-`auto-rows-auto` `auto-rows-min` `auto-rows-max` `auto-rows-fr` (minmax(0, 1fr))
-`auto-rows-[value]`
-
-#### gap
-`gap-{n}` `gap-px` `gap-[value]`
-`gap-x-{...}` `gap-y-{...}`
-
-#### justify-content
-`justify-start` `justify-end` `justify-center` `justify-between` `justify-around` `justify-evenly` `justify-stretch`
-`justify-end-safe` `justify-center-safe` `justify-baseline` `justify-normal`
-
-#### justify-items
-`justify-items-start` `justify-items-end` `justify-items-center` `justify-items-stretch`
-`justify-items-normal`
-
-#### justify-self
-`justify-self-auto` `justify-self-start` `justify-self-end` `justify-self-center` `justify-self-stretch`
-
-#### align-content
-`content-start` `content-end` `content-center` `content-between` `content-around` `content-evenly` `content-stretch`
-`content-baseline` `content-normal`
-
-#### align-items
-`items-start` `items-end` `items-center` `items-baseline` `items-stretch`
-`items-end-safe` `items-center-safe` `items-baseline-last`
-
-#### align-self
-`self-auto` `self-start` `self-end` `self-center` `self-baseline` `self-stretch`
-`self-end-safe` `self-center-safe` `self-baseline-last`
-
-#### place-content
-`place-content-{start|end|center|between|around|evenly|stretch|baseline}`
-`place-content-center-safe` `place-content-end-safe`
-
-#### place-items
-`place-items-{start|end|center|baseline|stretch}`
-`place-items-end-safe` `place-items-center-safe`
-
-#### place-self
-`place-self-{auto|start|end|center|stretch}`
-`place-self-end-safe` `place-self-center-safe`
 
 ---
 
-### Spacing
+# Flex 布局
 
-#### padding
-`p-{n}` → `padding: calc(var(--spacing) * n)`
-`px-{n}` (inline) `py-{n}` (block)
-`pt-{n}` `pr-{n}` `pb-{n}` `pl-{n}`
-`ps-{n}` (inline-start) `pe-{n}` (inline-end)
-All support: `{...}-px` `{...}-[value]`
+- slug: `flex`
+- track: 布局
+- level: 入门
+- minutes: 10
 
-#### margin
-`m-{n}` `mx-{n}` `my-{n}` `mt-{n}` `mr-{n}` `mb-{n}` `ml-{n}` `ms-{n}` `me-{n}`
-`m-auto` `mx-auto` etc.
-Negative: `-m-{n}` `-mt-{n}` etc.
+### 一维布局首选
 
-#### space-between
-`space-x-{n}` → `& > * + * { margin-inline-start: ... }`
-`space-y-{n}` → `& > * + * { margin-top: ... }`
-`space-x-reverse` `space-y-reverse`
+flex + items-center + justify-between 能解决大半顶栏/工具条。子项：flex-1 吃剩余空间，shrink-0 防压缩，gap-* 间隙。
 
----
+方向：flex-col / flex-row；换行 flex-wrap。
 
-### Sizing
 
-#### width
-`w-{n}` (spacing) `w-px` `w-auto` `w-full` (100%) `w-screen` (100vw)
-`w-{fraction}` (e.g., `w-1/2`, `w-2/3`)
-`w-{3xs|2xs|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl}` (container sizes)
-`w-min` `w-max` `w-fit`
-`w-dvw` `w-dvh` `w-lvw` `w-lvh` `w-svw` `w-svh` (viewport units)
-`w-[value]`
+### 对应源码 · 顶栏
 
-#### min-width
-`min-w-{n}` `min-w-px` `min-w-auto` `min-w-full` `min-w-screen` `min-w-min` `min-w-max` `min-w-fit`
-`min-w-{fraction}` `min-w-{3xs-7xl}`
-`min-w-dvw` `min-w-dvh` `min-w-lvw` `min-w-lvh` `min-w-svw` `min-w-svh`
-`min-w-[value]`
+```html
+<header class="flex items-center justify-between gap-3 px-4 py-3">
+  <span class="font-semibold">Logo</span>
+  <nav class="flex items-center gap-2">
+    <a class="text-sm text-slate-300">文档</a>
+    <button class="rounded-md bg-sky-500 px-3 py-1.5 text-sm text-white">开始</button>
+  </nav>
+</header>
+```
 
-#### max-width
-`max-w-{n}` `max-w-px` `max-w-none` `max-w-full` `max-w-screen` `max-w-min` `max-w-max` `max-w-fit`
-`max-w-{fraction}` `max-w-{3xs-7xl}` `container`
-`max-w-dvw` `max-w-dvh` `max-w-lvw` `max-w-lvh` `max-w-svw` `max-w-svh`
-`max-w-[value]`
 
-#### height
-`h-{n}` `h-px` `h-auto` `h-full` `h-screen` (100vh) `h-lh` (1lh)
-`h-{fraction}` `h-min` `h-max` `h-fit`
-`h-dvh` `h-dvw` `h-lvh` `h-lvw` `h-svh` `h-svw` (viewport units)
-`h-[value]`
+**交互 Demo：** 动手：Flex 对齐（kind: `flex`）
 
-#### min-height
-`min-h-{n}` `min-h-px` `min-h-auto` `min-h-full` `min-h-screen` `min-h-lh` `min-h-min` `min-h-max` `min-h-fit`
-`min-h-{fraction}`
-`min-h-dvh` `min-h-dvw` `min-h-lvh` `min-h-lvw` `min-h-svh` `min-h-svw`
-`min-h-[value]`
 
-#### max-height
-`max-h-{n}` `max-h-px` `max-h-none` `max-h-full` `max-h-screen` `max-h-lh` `max-h-min` `max-h-max` `max-h-fit`
-`max-h-{fraction}`
-`max-h-dvh` `max-h-dvw` `max-h-lvh` `max-h-lvw` `max-h-svh` `max-h-svw`
-`max-h-[value]`
+**测验：**
+- Q: 水平两端对齐 + 垂直居中？
+  - [✓] flex items-center justify-between
+  - [ ] grid place-center
+  - [ ] block mx-auto
+  - [ ] absolute inset-0
+  - 解析: 经典顶栏组合。
 
-#### size (width + height)
-`size-{n}` `size-px` `size-auto` `size-full` `size-min` `size-max` `size-fit`
-`size-{fraction}` `size-[value]`
 
 ---
 
-### Typography
+# Grid 布局
 
-#### font-family
-`font-sans` `font-serif` `font-mono`
-`font-{custom}` (from `--font-*` theme vars)
-`font-[value]`
+- slug: `grid`
+- track: 布局
+- level: 入门
+- minutes: 10
 
-#### font-size
-`text-{xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl}`
-Each includes line-height. Override with `text-{size}/{leading}` (e.g., `text-lg/7`)
-`text-[value]` `text-(length:--var)`
+### 二维网格
 
-#### font-weight
-`font-{thin|extralight|light|normal|medium|semibold|bold|extrabold|black}`
-(100-900)
+grid grid-cols-2 md:grid-cols-3 gap-4。自适应：grid-cols-[repeat(auto-fill,minmax(12rem,1fr))]。跨列 col-span-2。
 
-#### font-style
-`italic` `not-italic` (normal)
+仪表盘、卡片墙、表单两列常用 Grid。
 
-#### font-smoothing
-`antialiased` (grayscale) `subpixel-antialiased` (auto)
 
-#### font-stretch
-`font-stretch-{ultra-condensed|extra-condensed|condensed|semi-condensed|normal|semi-expanded|expanded|extra-expanded|ultra-expanded}`
-`font-stretch-{n%}` `font-stretch-[value]`
+### 对应源码 · 卡片墙
 
-#### font-variant-numeric
-`normal-nums` `ordinal` `slashed-zero` `lining-nums` `oldstyle-nums` `proportional-nums` `tabular-nums` `diagonal-fractions` `stacked-fractions`
+```html
+<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="rounded-lg bg-slate-800 p-4">A</div>
+  <div class="rounded-lg bg-slate-800 p-4">B</div>
+  <div class="rounded-lg bg-slate-800 p-4 sm:col-span-2 lg:col-span-1">C</div>
+</div>
+```
 
-#### letter-spacing
-`tracking-{tighter|tight|normal|wide|wider|widest}`
-`tracking-[value]`
 
-#### line-height
-`leading-none` (1) `leading-{n}` (spacing-based)
-`leading-[value]`
-Or via font-size modifier: `text-{size}/{n}` `text-{size}/[value]`
+**交互 Demo：** 动手：Grid 列数（kind: `grid`）
 
-#### line-clamp
-`line-clamp-{n}` `line-clamp-none`
-`line-clamp-[value]`
 
-#### list-style-type
-`list-none` `list-disc` `list-decimal`
-`list-[value]`
+**测验：**
+- Q: 中等屏 3 列的写法？
+  - [ ] cols-3-md
+  - [✓] md:grid-cols-3
+  - [ ] grid-3 md
+  - [ ] media-grid-3
+  - 解析: 断点前缀 + grid-cols-n。
 
-#### list-style-position
-`list-inside` `list-outside`
-
-#### list-style-image
-`list-image-none` `list-image-[url(...)]`
-
-#### text-align
-`text-left` `text-center` `text-right` `text-justify` `text-start` `text-end`
-
-#### text-color
-`text-{color}-{shade}` (e.g., `text-blue-500`)
-`text-inherit` `text-current` `text-transparent` `text-black` `text-white`
-`text-{color}/{opacity}` (e.g., `text-black/50`)
-`text-[value]`
-
-#### text-decoration-line
-`underline` `overline` `line-through` `no-underline` (none)
-
-#### text-decoration-color
-`decoration-{color}-{shade}` `decoration-inherit` `decoration-current` `decoration-transparent`
-`decoration-[value]`
-
-#### text-decoration-style
-`decoration-solid` `decoration-double` `decoration-dotted` `decoration-dashed` `decoration-wavy`
-
-#### text-decoration-thickness
-`decoration-auto` `decoration-from-font` `decoration-{n}`
-`decoration-[value]`
-
-#### text-underline-offset
-`underline-offset-auto` `underline-offset-{n}` `-underline-offset-{n}`
-`underline-offset-[value]`
-
-#### text-transform
-`uppercase` `lowercase` `capitalize` `normal-case` (none)
-
-#### text-overflow
-`truncate` (overflow: hidden + text-overflow: ellipsis + white-space: nowrap)
-`text-ellipsis` `text-clip`
-
-#### text-wrap
-`text-wrap` `text-nowrap` `text-balance` `text-pretty`
-
-#### text-indent
-`indent-{n}` `-indent-{n}` `indent-px` `-indent-px` `indent-[value]`
-
-#### vertical-align
-`align-{baseline|top|middle|bottom|text-top|text-bottom|sub|super}`
-`align-[value]`
-
-#### white-space
-`whitespace-normal` `whitespace-nowrap` `whitespace-pre` `whitespace-pre-line` `whitespace-pre-wrap` `whitespace-break-spaces`
-
-#### word-break
-`break-normal` `break-all` `break-keep`
-
-#### overflow-wrap
-`wrap-break-word` `wrap-anywhere` `wrap-normal`
-
-#### hyphens
-`hyphens-none` `hyphens-manual` `hyphens-auto`
-
-#### content
-`content-none` `content-[value]` (e.g., `content-['hello']`)
 
 ---
+
+# 定位与层级
+
+- slug: `position`
+- track: 布局
+- level: 进阶
+- minutes: 8
+
+### 定位工具
+
+relative 建立定位上下文；absolute inset-0 铺满父级。sticky top-0 做吸顶导航。z-10 / z-40 控制层叠。
+
+遮罩：fixed inset-0 bg-black/50。
+
+
+### 对应源码 · 角标
+
+```html
+<div class="relative h-24 w-40 rounded-lg bg-slate-800">
+  <span class="absolute -right-2 -top-2 rounded-full bg-rose-500 px-2 py-0.5 text-xs text-white">
+    NEW
+  </span>
+</div>
+```
+
+
+**交互 Demo：** 动手：绝对定位角标（kind: `position`）
+
+
+**测验：**
+- Q: 吸顶导航常用？
+  - [ ] absolute top-0
+  - [✓] sticky top-0 z-40
+  - [ ] static top-0
+  - [ ] float-top
+  - 解析: sticky + top + 足够 z-index。
+
+
+---
+
+# 边框 · 圆角 · 阴影
+
+- slug: `borders`
+- track: 布局
+- level: 入门
+- minutes: 8
+
+### 质感
+
+rounded-md / rounded-xl、border border-white/10、shadow-sm / shadow-lg、ring-1 ring-white/10。
+
+暗色 UI 常用「细边框 + 轻阴影 + 略亮表面」表达层级，而不是厚重阴影。
+
+
+### 对应源码 · 表面
+
+```html
+<div class="rounded-xl border border-white/10 bg-slate-900/80 p-4 shadow-lg ring-1 ring-white/5">
+  卡片表面
+</div>
+```
+
+
+**交互 Demo：** 动手：圆角与阴影（kind: `borders`）
+
+
+**测验：**
+- Q: 半透明边框常用？
+  - [ ] border-half
+  - [✓] border-white/10
+  - [ ] border-opacity-only
+  - [ ] outline-soft
+  - 解析: 颜色/透明度 语法。
+
+
+---
+
+# 状态变体
+
+- slug: `states`
+- track: 交互
+- level: 进阶
+- minutes: 9
+
+### 交互状态
+
+hover:bg-sky-600、focus-visible:ring-2、active:scale-95、disabled:opacity-50。组合同级：group / group-hover:、peer / peer-checked:。
+
+无障碍：用 focus-visible 而不是仅 focus，避免鼠标点击后一直有粗环。
+
+
+### 对应源码 · 按钮状态
+
+```html
+<button class="rounded-lg bg-sky-500 px-4 py-2 text-white
+  transition hover:bg-sky-600
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400
+  active:scale-[0.98] disabled:opacity-50">
+  提交
+</button>
+```
+
+
+**交互 Demo：** 动手：hover / focus（kind: `states`）
+
+
+**测验：**
+- Q: 仅键盘聚焦显示环用？
+  - [ ] focus:
+  - [✓] focus-visible:
+  - [ ] active:
+  - [ ] target:
+  - 解析: focus-visible 更贴合键盘导航。
+
+
+---
+
+# 响应式设计
+
+- slug: `responsive`
+- track: 交互
+- level: 进阶
+- minutes: 10
+
+### 移动优先
+
+默认写手机样式，再用 sm: md: lg: xl: 2xl: 增强。例如：flex-col md:flex-row、grid-cols-1 md:grid-cols-2。
+
+隐藏：hidden md:block。容器：max-w + 内边距在窄屏更重要。
+
+
+### 对应源码 · 响应式栅格
+
+```html
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="h-20 rounded-lg bg-sky-500/20"></div>
+  <div class="h-20 rounded-lg bg-sky-500/30"></div>
+  <div class="h-20 rounded-lg bg-sky-500/40"></div>
+  <div class="h-20 rounded-lg bg-sky-500/50"></div>
+</div>
+```
+
+
+**交互 Demo：** 动手：断点预览（kind: `responsive`）
+
+
+**测验：**
+- Q: Tailwind 响应式默认策略？
+  - [ ] 桌面优先
+  - [✓] 移动优先
+  - [ ] 打印优先
+  - [ ] 无策略
+  - 解析: 无前缀 = 最小屏，再往上覆盖。
+
+
+---
+
+# 暗色模式
+
+- slug: `dark-mode`
+- track: 主题
+- level: 进阶
+- minutes: 8
+
+### dark 变体
+
+常见策略：在 <html class="dark"> 上切换。类名：bg-white dark:bg-slate-900。
+
+本站以暗色为默认设计系统（token 直接暗色），产品里也可做 light + dark 双轨。
+
+
+### 对应源码 · 双轨卡片
+
+```html
+<div class="rounded-xl border border-slate-200 bg-white p-4 text-slate-900
+  dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+  自动适应主题
+</div>
+```
+
+
+**交互 Demo：** 动手：切换明暗（kind: `dark-mode`）
+
+
+**测验：**
+- Q: 暗色类前缀是？
+  - [ ] night:
+  - [✓] dark:
+  - [ ] theme-dark:
+  - [ ] prefers:
+  - 解析: dark: 变体。
+
+
+---
+
+# 自定义主题
+
+- slug: `custom`
+- track: 主题
+- level: 进阶
+- minutes: 9
+
+### 设计令牌
+
+在 @theme 定义 --color-*、--font-*、--radius-*、--shadow-*，即可生成对应工具类。
+
+原则：界面里少写任意值 p-[13px]，优先 token，保证全站一致。
+
+
+### 对应源码 · @theme
+
+```css
+@theme {
+  --color-primary: #38bdf8;
+  --color-surface: #0f1720;
+  --radius-lg: 16px;
+  --font-display: "DM Sans", system-ui, sans-serif;
+}
+```
+
+
+> **提示：** 本站的 bg-primary、text-muted、rounded-lg 都来自 styles.css 的 @theme。
+
+
+**测验：**
+- Q: 应优先使用？
+  - [ ] 任意值 p-[17px] 到处
+  - [✓] 设计令牌 + 刻度
+  - [ ] 内联 style 像素
+  - [ ] 随机颜色
+  - 解析: 令牌保证一致与可维护。
+
+
+---
+
+# 过渡与动画
+
+- slug: `animation`
+- track: 交互
+- level: 进阶
+- minutes: 8
+
+### 动效
+
+transition-colors duration-150、transition-transform、hover:-translate-y-0.5。内置 animate-spin / pulse / bounce。
+
+注意 prefers-reduced-motion：减少非必要动画。
+
+
+### 对应源码 · 悬浮抬起
+
+```html
+<div class="rounded-xl border border-slate-700 bg-slate-900 p-4
+  transition duration-200 hover:-translate-y-1 hover:border-sky-500/40 hover:shadow-lg">
+  Hover me
+</div>
+```
+
+
+**交互 Demo：** 动手：过渡效果（kind: `animation`）
+
+
+**测验：**
+- Q: 颜色平滑过渡常用？
+  - [ ] animate-color
+  - [✓] transition-colors
+  - [ ] move-colors
+  - [ ] fade-only
+  - 解析: transition-colors + duration。
+
+
+---
+
+# 表单样式
+
+- slug: `forms`
+- track: 组件
+- level: 进阶
+- minutes: 9
+
+### 表单控件
+
+输入框：h-10 w-full rounded-lg border bg-transparent px-3 text-sm。焦点环 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30。
+
+错误态：border-rose-500 text-rose-400。
+
+
+### 对应源码 · 字段
+
+```html
+<label class="block text-sm text-slate-300">
+  邮箱
+  <input class="mt-1 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-sm
+    placeholder:text-slate-600 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+    placeholder="you@example.com" />
+</label>
+```
+
+
+**交互 Demo：** 动手：表单字段（kind: `forms`）
+
+
+**测验：**
+- Q: placeholder 颜色用？
+  - [✓] placeholder:text-…
+  - [ ] ph:text-…
+  - [ ] hint:text-…
+  - [ ] empty:text-…
+  - 解析: placeholder: 变体。
+
+
+---
+
+# Tailwind v4 要点
+
+- slug: `v4`
+- track: 主题
+- level: 进阶
+- minutes: 8
+
+### v4 变化
+
+1) 配置迁移到 CSS（@theme）
+2) 新引擎，构建更快
+3) 动态工具类支持更好
+4) 部分旧插件写法需对照迁移指南
+
+学 v4 时，把「令牌在 CSS」当成默认心智。
+
+
+### v3 → v4 心智
+
+```css
+/* v3: tailwind.config.js theme.extend.colors.brand = '…' */
+/* v4: */
+@theme {
+  --color-brand: #38bdf8;
+}
+```
+
+
+**交互 Demo：** 动手：令牌驱动的 UI（kind: `v4`）
+
+
+**测验：**
+- Q: v4 设计令牌主要写在？
+  - [ ] HTML data-*
+  - [✓] @theme
+  - [ ] README
+  - [ ] localStorage
+  - 解析: CSS-first @theme。
+
+
+---
+
+# 实战：卡片组件
+
+- slug: `card-ui`
+- track: 组件
+- level: 实战
+- minutes: 10
+
+### 卡片配方
+
+表面 + 边框 + 内边距 + 标题层级 + 操作区。可加媒体区 aspect-video、标签 pill、底部操作栏。
+
+
+### 对应源码 · 产品卡
+
+```html
+<article class="overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
+  <div class="aspect-video bg-gradient-to-br from-sky-500/30 to-indigo-500/20"></div>
+  <div class="p-4">
+    <h3 class="font-semibold text-white">产品名</h3>
+    <p class="mt-1 text-sm text-slate-400">一句话描述价值主张。</p>
+    <button class="mt-4 rounded-md bg-sky-500 px-3 py-1.5 text-sm text-white">了解</button>
+  </div>
+</article>
+```
+
+
+**交互 Demo：** 动手：卡片（kind: `card`）
+
+
+**测验：**
+- Q: 媒体区固定比例常用？
+  - [ ] h-fixed
+  - [✓] aspect-video
+  - [ ] ratio-16
+  - [ ] video-box
+  - 解析: aspect-video ≈ 16:9。
+
+
+---
+
+# 实战：导航栏
+
+- slug: `navbar`
+- track: 组件
+- level: 实战
+- minutes: 10
+
+### 导航模式
+
+桌面：flex 横排链接。移动：汉堡按钮 + 抽屉/折叠。sticky + backdrop-blur 很常见。
+
+本站侧栏就是响应式导航的完整例子。
+
+
+### 对应源码 · 顶栏骨架
+
+```html
+<header class="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur">
+  <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+    <span class="font-semibold">Brand</span>
+    <nav class="ml-auto hidden gap-4 md:flex">…</nav>
+    <button class="md:hidden">Menu</button>
+  </div>
+</header>
+```
+
+
+**交互 Demo：** 动手：导航（kind: `navbar`）
+
+
+**测验：**
+- Q: 仅桌面显示导航链接？
+  - [ ] block md:hidden
+  - [✓] hidden md:flex
+  - [ ] flex md:hidden
+  - [ ] invisible
+  - 解析: 默认 hidden，md 起 flex。
+
+
+---
+
+# 实战：仪表盘布局
+
+- slug: `dashboard`
+- track: 实战
+- level: 实战
+- minutes: 12
+
+### 后台骨架
+
+常见结构：左侧固定宽侧栏 + 右侧主内容。主区顶部工具条，下方 grid 统计卡 + 表格/图表。
+
+布局：min-h-dvh + flex；侧栏 w-64 shrink-0。
+
+
+### 对应源码 · 骨架
+
+```html
+<div class="flex min-h-72 rounded-xl border border-slate-700 overflow-hidden">
+  <aside class="w-40 shrink-0 border-r border-slate-700 bg-slate-900 p-3 text-sm">侧栏</aside>
+  <main class="flex-1 bg-slate-950 p-4">
+    <div class="grid grid-cols-3 gap-2">
+      <div class="rounded-lg bg-slate-800 p-3 text-xs">指标</div>
+      <div class="rounded-lg bg-slate-800 p-3 text-xs">指标</div>
+      <div class="rounded-lg bg-slate-800 p-3 text-xs">指标</div>
+    </div>
+  </main>
+</div>
+```
+
+
+**交互 Demo：** 动手：仪表盘（kind: `dashboard`）
+
+
+**测验：**
+- Q: 侧栏防被压扁用？
+  - [ ] grow
+  - [✓] shrink-0
+  - [ ] basis-auto
+  - [ ] order-first
+  - 解析: shrink-0 保持宽度。
+
+
+---
+
+# 常用模式速通
+
+- slug: `patterns`
+- track: 实战
+- level: 实战
+- minutes: 8
+
+### 产品 UI 模式
+
+空状态：虚线边框 + 居中文案。加载：animate-pulse 骨架。标签：rounded-full bg-…/15 text-…。分割线：border-t / divide-y。
+
+把模式当乐高，而不是每次从零设计。
+
+
+### 对应源码 · 空状态
+
+```html
+<div class="rounded-xl border border-dashed border-slate-700 px-4 py-12 text-center">
+  <p class="text-sm text-slate-400">暂无数据</p>
+  <button class="mt-3 text-sm text-sky-400">新建一项</button>
+</div>
+```
+
+
+> **提示：** 去「设计工坊」用开关拼装一页 UI，比只看文档记得更牢。
+
+
+**测验：**
+- Q: 骨架屏常用动画？
+  - [ ] animate-bounce
+  - [✓] animate-pulse
+  - [ ] animate-ping
+  - [ ] spin-slow
+  - 解析: pulse 适合占位块。
+
+
+---
+
+# 生产与最佳实践
+
+- slug: `production`
+- track: 实战
+- level: 实战
+- minutes: 9
+
+### 上线清单
+
+1) 用构建工具集成，不要生产环境 CDN 乱拼（教学可用 CDN）
+2) 组件化复用，避免复制超长 class 十遍
+3) 对比度达标；焦点可见
+4) 尊重 reduced-motion
+5) 任意值克制使用
+6) 与设计令牌对齐
+
+恭喜学到这里——去练习场与结业证明收个尾吧。
+
+
+### 对应源码 · cn 合并
+
+```tsx
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+// <button className={cn("px-3 py-2", active && "bg-sky-500")} />
+```
+
+
+**测验：**
+- Q: 冲突 class 合并推荐？
+  - [ ] 字符串相加
+  - [✓] tailwind-merge / cn()
+  - [ ] 随机覆盖
+  - [ ] 不用 class
+  - 解析: twMerge 正确处理冲突 utility。
+- Q: 生产环境更推荐？
+  - [ ] Play CDN 永久
+  - [✓] 构建时扫描打包
+  - [ ] 全量手写 CSS 复制
+  - [ ] 禁用 purge
+  - 解析: Vite/插件构建 + 内容扫描。
+
+
+---
+
+# 任意值与修饰符
+
+- slug: `arbitrary`
+- track: 进阶语法
+- level: 进阶
+- minutes: 10
+
+### 跳出刻度
+
+官方文档称 Arbitrary values：当默认刻度不够时用方括号。
+
+• p-[13px]、w-[28rem]、grid-cols-[1fr_2fr]
+• 透明度：bg-black/50、text-white/80
+• 重要：hidden! 或 !flex（v4 支持后缀 !）
+• 变量：p-(--my-space)、text-(color:--brand)
+• 类型提示：text 既可是字号也可是颜色，用 text-(length:--x) 消歧。
+
+对照官网 Core Syntax，这是写生产代码最常用的「逃生舱」。
+
+
+### 对应源码
+
+```html
+<div class="w-[min(100%,28rem)] rounded-[1.25rem] bg-sky-500/15 p-[clamp(1rem,3vw,2rem)] text-[color:var(--brand,#38bdf8)]">
+  任意值 + 透明度 + 变量
+</div>
+```
+
+
+> **提示：** 优先用设计令牌与刻度；任意值应是例外，而不是默认。
+
+
+**测验：**
+- Q: 50% 黑底？
+  - [ ] bg-black-50
+  - [✓] bg-black/50
+  - [ ] bg-opacity-black
+  - [ ] black:bg-50
+  - 解析: 颜色/透明度修饰符。
+- Q: 任意 padding 13px？
+  - [ ] p-13
+  - [✓] p-[13px]
+  - [ ] pad-13px
+  - [ ] p(13px)
+  - 解析: 方括号任意值。
+
+
+---
+
+# 变体进阶
+
+- slug: `variants-deep`
+- track: 进阶语法
+- level: 进阶
+- minutes: 12
+
+### 状态不只 hover
+
+官网 Hover, focus, and other states 覆盖大量变体。进阶组合：
+
+• group / group-hover: 父状态影响子
+• peer / peer-checked: 兄弟状态（常用于自定义 checkbox）
+• has-[:checked]、has-[img]：容器查询子树
+• not-hover、not-disabled
+• first / last / odd / even / nth-*
+• aria-expanded:、data-[state=open]:
+• 堆叠：dark:md:hover:bg-sky-500（从左到右）
+
+
+### 对应源码 · group
+
+```html
+<a class="group flex items-center gap-3 rounded-lg p-3 hover:bg-slate-800">
+  <span class="font-medium group-hover:text-sky-400">标题</span>
+  <span class="text-slate-500 group-hover:text-slate-300">副文</span>
+</a>
+```
+
+
+**交互 Demo：** 动手：状态变体（kind: `states`）
+
+
+**测验：**
+- Q: 父悬停时改子元素颜色用？
+  - [ ] parent-hover:
+  - [✓] group + group-hover:
+  - [ ] peer-hover: only
+  - [ ] has-hover:
+  - 解析: group 标记父级，子级用 group-hover:。
+
+
+---
+
+# 背景与渐变
+
+- slug: `backgrounds`
+- track: 视觉
+- level: 入门
+- minutes: 10
 
 ### Backgrounds
 
-#### background-color
-`bg-{color}-{shade}` `bg-inherit` `bg-current` `bg-transparent` `bg-black` `bg-white`
-`bg-{color}/{opacity}`
-`bg-[value]`
+官网 Backgrounds 章节：background-color、image（含 linear/radial/conic gradient 工具类）、position、size、repeat、attachment、origin、clip。
 
-#### background-image
-`bg-none`
-`bg-linear-{to-t|to-tr|to-r|to-br|to-b|to-bl|to-l|to-tl}` (linear gradients)
-`bg-linear-[angle]` (e.g., `bg-linear-[45deg]`)
-`bg-radial` `bg-radial-[shape]`
-`bg-conic` `bg-conic-[angle]`
-`bg-[url(...)]` `bg-[value]`
+常用配方：
+• bg-gradient-to-r from-sky-500 to-indigo-500
+• bg-clip-text text-transparent 做渐变字
+• bg-cover bg-center
+• bg-fixed 视差感（注意移动端性能）
 
-Gradient colors: `from-{color}` `via-{color}` `to-{color}`
-Positions: `from-{%}` `via-{%}` `to-{%}`
 
-#### background-position
-`bg-{top|bottom|left|right|center}`
-`bg-{top-left|top-right|bottom-left|bottom-right}`
-`bg-position-[value]`
+### 对应源码
 
-#### background-size
-`bg-auto` `bg-cover` `bg-contain`
-`bg-size-[value]`
+```html
+<div class="rounded-xl bg-gradient-to-br from-sky-500 via-cyan-400 to-indigo-500 p-6">
+  <p class="bg-clip-text text-2xl font-bold text-transparent bg-gradient-to-r from-white to-white/60">
+    Gradient
+  </p>
+</div>
+```
 
-#### background-repeat
-`bg-repeat` `bg-no-repeat` `bg-repeat-x` `bg-repeat-y` `bg-repeat-round` `bg-repeat-space`
 
-#### background-attachment
-`bg-fixed` `bg-local` `bg-scroll`
+**交互 Demo：** 动手：色彩与表面（kind: `colors`）
 
-#### background-origin
-`bg-origin-border` `bg-origin-padding` `bg-origin-content`
 
-#### background-clip
-`bg-clip-border` `bg-clip-padding` `bg-clip-content` `bg-clip-text`
+**测验：**
+- Q: 从左到右线性渐变？
+  - [ ] bg-gradient-x
+  - [✓] bg-gradient-to-r
+  - [ ] gradient-horizontal
+  - [ ] bg-linear-right
+  - 解析: bg-gradient-to-{t|r|b|l|…}。
+
 
 ---
 
-### Borders
+# 阴影 · 透明度 · 混合
 
-#### border-width
-`border` (1px all) `border-{n}`
-`border-{t|r|b|l|x|y}` `border-{t|r|b|l|x|y}-{n}`
-`border-{s|e}` (inline start/end)
-`border-[value]`
-
-#### border-color
-`border-{color}-{shade}` `border-inherit` `border-current` `border-transparent`
-`border-{t|r|b|l|x|y}-{color}` `border-{s|e}-{color}`
-`border-[value]`
-
-#### border-style
-`border-solid` `border-dashed` `border-dotted` `border-double` `border-hidden` `border-none`
-
-#### border-radius
-`rounded-{xs|sm|md|lg|xl|2xl|3xl|4xl}` `rounded-none` `rounded-full`
-`rounded-{t|r|b|l|tl|tr|br|bl|s|e|ss|se|es|ee}-{size}`
-`rounded-[value]`
-
-#### divide-width
-`divide-x` `divide-x-{n}` `divide-y` `divide-y-{n}`
-`divide-x-reverse` `divide-y-reverse`
-
-#### divide-color
-`divide-{color}-{shade}` `divide-inherit` `divide-current` `divide-transparent`
-
-#### divide-style
-`divide-solid` `divide-dashed` `divide-dotted` `divide-double` `divide-none`
-
-#### border-collapse
-`border-collapse` `border-separate`
-
-#### border-spacing
-`border-spacing-{n}` `border-spacing-x-{n}` `border-spacing-y-{n}`
-`border-spacing-px` `border-spacing-[value]`
-
-#### outline-width
-`outline-{n}` `outline` (1px)
-`outline-[value]`
-
-#### outline-color
-`outline-{color}-{shade}` `outline-inherit` `outline-current` `outline-transparent`
-`outline-[value]`
-
-#### outline-style
-`outline-none` `outline-hidden` `outline-solid` `outline-dashed` `outline-dotted` `outline-double`
-
-#### outline-offset
-`outline-offset-{n}` `-outline-offset-{n}`
-`outline-offset-[value]`
-
-#### ring (box-shadow based outline)
-`ring` (1px) `ring-{n}`
-`ring-{color}-{shade}` `ring-inherit` `ring-current` `ring-transparent`
-`ring-[value]`
-
-#### inset-ring (inset box-shadow based outline)
-`inset-ring` (1px) `inset-ring-{n}`
-`inset-ring-{color}-{shade}` `inset-ring-inherit` `inset-ring-current` `inset-ring-transparent`
-`inset-ring-[value]`
-
----
+- slug: `effects`
+- track: 视觉
+- level: 入门
+- minutes: 9
 
 ### Effects
 
-#### box-shadow
-`shadow-{2xs|xs|sm|md|lg|xl|2xl}` `shadow-none`
-`shadow-{color}-{shade}` (sets shadow color)
-`shadow-[value]`
+官网 Effects：box-shadow / inset-shadow / text-shadow（v4.1+）、opacity、mix-blend-mode、background-blend-mode、mask-*。
 
-#### inset-shadow
-`inset-shadow-{2xs|xs|sm}` `inset-shadow-none`
-`inset-shadow-{color}-{shade}`
+暗色 UI 偏好 shadow-sm + ring-1 ring-white/10，而不是厚重大阴影。
 
-#### text-shadow
-`text-shadow-{2xs|xs|sm|md|lg}` `text-shadow-none`
-`text-shadow-{color}-{shade}`
-`text-shadow-[value]`
 
-#### opacity
-`opacity-{n}` (0-100)
-`opacity-[value]`
+### 对应源码
 
-#### mix-blend-mode
-`mix-blend-{normal|multiply|screen|overlay|darken|lighten|color-dodge|color-burn|hard-light|soft-light|difference|exclusion|hue|saturation|color|luminosity|plus-darker|plus-lighter}`
+```html
+<div class="rounded-xl bg-slate-900/80 p-4 shadow-lg ring-1 ring-white/10">
+  <p class="text-sm text-white/90">ring + shadow + 半透明表面</p>
+</div>
+```
 
-#### background-blend-mode
-`bg-blend-{...}` (same values as mix-blend)
 
-#### mask-image
-`mask-none` `mask-[value]`
-Linear: `mask-linear-{n}` `mask-{t|r|b|l}-from-{n|%}` `mask-{t|r|b|l}-to-{n|%}`
-Radial: `mask-radial-from-{n|%}` `mask-radial-to-{n|%}` `mask-radial-at-{position}` `mask-circle` `mask-ellipse`
-Conic: `mask-conic-{n}` `mask-conic-from-{n|%}` `mask-conic-to-{n|%}`
+**交互 Demo：** 动手：表面质感（kind: `borders`）
 
-#### mask-size
-`mask-auto` `mask-cover` `mask-contain`
-`mask-[value]`
 
-#### mask-position
-`mask-{center|top|bottom|left|right|...}`
+**测验：**
+- Q: 细描边光环常用？
+  - [ ] border-fat
+  - [✓] ring-1 ring-white/10
+  - [ ] outline-black
+  - [ ] glow-sm
+  - 解析: ring 基于 box-shadow，适合暗色描边。
 
-#### mask-repeat
-`mask-repeat` `mask-no-repeat` `mask-repeat-x` `mask-repeat-y` `mask-repeat-round` `mask-repeat-space`
-
-#### mask-origin
-`mask-origin-{border|padding|content}`
-
-#### mask-clip
-`mask-clip-{border|padding|content|no-clip}`
-
-#### mask-composite
-`mask-composite-{add|subtract|intersect|exclude}`
-
-#### mask-mode
-`mask-mode-{alpha|luminance|match-source}`
-
-#### mask-type
-`mask-type-{alpha|luminance}`
 
 ---
+
+# 滤镜与 Backdrop
+
+- slug: `filters`
+- track: 视觉
+- level: 进阶
+- minutes: 8
 
 ### Filters
 
-Filter utilities compose on the `filter` property. Reset with `filter-none`.
+filter：blur、brightness、contrast、grayscale、hue-rotate、invert、saturate、sepia、drop-shadow。
 
-#### blur
-`blur-{xs|sm|md|lg|xl|2xl|3xl}` `blur-none`
-`blur-[value]`
+backdrop-*：对元素背后的内容滤镜，经典毛玻璃：bg-white/10 backdrop-blur-md。
 
-#### brightness
-`brightness-{n}` (%)
-`brightness-[value]`
+注意：大面积 blur 有性能成本。
 
-#### contrast
-`contrast-{n}` (%)
-`contrast-[value]`
 
-#### grayscale
-`grayscale` (100%) `grayscale-{n}` (%)
-`grayscale-[value]`
+### 对应源码 · 毛玻璃
 
-#### hue-rotate
-`hue-rotate-{n}`
-`-hue-rotate-{n}` (negative)
-`hue-rotate-[value]`
+```html
+<div class="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
+  Frosted glass
+</div>
+```
 
-#### invert
-`invert` (100%) `invert-{n}` (%)
-`invert-[value]`
 
-#### saturate
-`saturate-{n}` (%)
-`saturate-[value]`
+**交互 Demo：** 动手：视觉效果（kind: `animation`）
 
-#### sepia
-`sepia` (100%) `sepia-{n}` (%)
-`sepia-[value]`
 
-#### drop-shadow
-`drop-shadow-{xs|sm|md|lg|xl|2xl}` `drop-shadow-none`
-`drop-shadow-{color}-{shade}`
-`drop-shadow-[value]`
+**测验：**
+- Q: 毛玻璃关键工具？
+  - [ ] filter-blur on self only
+  - [✓] backdrop-blur + 半透明底
+  - [ ] opacity-0
+  - [ ] mix-blend-darken
+  - 解析: backdrop-blur 模糊背后内容。
 
-Backdrop filter utilities compose on `backdrop-filter`. Reset with `backdrop-filter-none`.
-
-#### backdrop-blur
-`backdrop-blur-{xs|sm|md|lg|xl|2xl|3xl}` `backdrop-blur-none`
-
-#### backdrop-brightness
-`backdrop-brightness-{n}` (%)
-
-#### backdrop-contrast
-`backdrop-contrast-{n}` (%)
-
-#### backdrop-grayscale
-`backdrop-grayscale` (100%) `backdrop-grayscale-{n}` (%)
-
-#### backdrop-hue-rotate
-`backdrop-hue-rotate-{n}`
-`-backdrop-hue-rotate-{n}` (negative)
-
-#### backdrop-invert
-`backdrop-invert` (100%) `backdrop-invert-{n}` (%)
-
-#### backdrop-opacity
-`backdrop-opacity-{n}` (0-100)
-
-#### backdrop-saturate
-`backdrop-saturate-{n}` (%)
-
-#### backdrop-sepia
-`backdrop-sepia` (100%) `backdrop-sepia-{n}` (%)
 
 ---
 
-### Tables
+# 变换 Transforms
 
-#### table-layout
-`table-auto` `table-fixed`
-
-#### caption-side
-`caption-top` `caption-bottom`
-
----
-
-### Transitions & Animation
-
-#### transition-property
-`transition` (color, bg, border, text-decoration, fill, stroke, opacity, shadow, transform, filter, backdrop-filter)
-`transition-all` `transition-colors` `transition-opacity` `transition-shadow` `transition-transform` `transition-none`
-`transition-[value]`
-
-#### transition-behavior
-`transition-normal` `transition-discrete`
-
-#### transition-duration
-`duration-{n}` (ms)
-`duration-[value]`
-
-#### transition-timing-function
-`ease-linear` `ease-in` `ease-out` `ease-in-out`
-`ease-[value]`
-
-#### transition-delay
-`delay-{n}` (ms)
-`delay-[value]`
-
-#### animation
-`animate-none` `animate-spin` `animate-ping` `animate-pulse` `animate-bounce`
-`animate-{custom}` (from `--animate-*` theme vars)
-`animate-[value]`
-
----
+- slug: `transforms`
+- track: 交互
+- level: 进阶
+- minutes: 9
 
 ### Transforms
 
-#### transform
-Transforms are composable. Each utility adds to the transform:
-`transform-gpu` `transform-cpu` `transform-none` `transform-[value]`
+官网 Transforms：scale、rotate、translate、skew、origin、perspective、backface。
 
-#### scale
-`scale-{n}` (%) `-scale-{n}` `scale-none` `scale-3d`
-`scale-x-{n}` `scale-y-{n}` `scale-z-{n}`
-`scale-[value]`
+动效组合：transition + hover:-translate-y-1 hover:scale-105。
+负值：-translate-x-1、-rotate-6。
 
-#### rotate
-`rotate-{n}` (degrees) `-rotate-{n}` `rotate-none`
-`rotate-x-{n}` `rotate-y-{n}` `rotate-z-{n}` (3D rotations)
-`rotate-[value]`
 
-#### translate
-`translate-{n}` (both axes) `translate-x-{n}` `translate-y-{n}` `translate-z-{n}` (spacing scale)
-`translate-{x|y}-{fraction}` `translate-{x|y}-full` `translate-{x|y}-px`
-`-translate-{...}` (negative) `translate-none`
-`translate-[value]`
+### 对应源码
 
-#### skew
-`skew-{n}` `-skew-{n}` (both axes, degrees)
-`skew-x-{n}` `skew-y-{n}` `-skew-x-{n}` `-skew-y-{n}`
-`skew-[value]`
+```html
+<button class="rounded-lg bg-sky-500 px-4 py-2 text-white transition
+  hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+  Lift
+</button>
+```
 
-#### transform-origin
-`origin-{center|top|top-right|right|bottom-right|bottom|bottom-left|left|top-left}`
-`origin-[value]`
 
-#### transform-style
-`transform-3d` (preserve-3d) `transform-flat` (flat)
+**交互 Demo：** 动手：变换与过渡（kind: `animation`）
 
-#### perspective
-`perspective-{dramatic|near|normal|midrange|distant}` `perspective-none`
-(100px, 300px, 500px, 800px, 1200px)
-`perspective-[value]`
 
-#### perspective-origin
-`perspective-origin-{center|top|top-right|right|bottom-right|bottom|bottom-left|left|top-left}`
-`perspective-origin-[value]`
+**测验：**
+- Q: 悬停轻微上移？
+  - [ ] hover:up-1
+  - [✓] hover:-translate-y-1
+  - [ ] hover:mt--1
+  - [ ] hover:top--1
+  - 解析: 负 translate-y。
 
-#### backface-visibility
-`backface-visible` `backface-hidden`
 
 ---
 
-### Interactivity
+# 容器查询
 
-#### accent-color
-`accent-{color}-{shade}` `accent-inherit` `accent-current` `accent-transparent`
-`accent-[value]`
+- slug: `container-queries`
+- track: 进阶语法
+- level: 进阶
+- minutes: 10
 
-#### appearance
-`appearance-none` `appearance-auto`
+### 不只媒体查询
 
-#### caret-color
-`caret-{color}-{shade}` `caret-inherit` `caret-current` `caret-transparent`
-`caret-[value]`
+现代布局可用容器查询：父级 @container，子级 @md:、@max-md: 等基于容器宽度响应，而不是视口。
 
-#### color-scheme
-`scheme-normal` `scheme-light` `scheme-dark` `scheme-light-dark` `scheme-only-dark` `scheme-only-light`
+适合卡片进仪表盘网格：同一组件在窄栏/宽栏自动改布局。
 
-#### cursor
-`cursor-{auto|default|pointer|wait|text|move|help|not-allowed|none|context-menu|progress|cell|crosshair|vertical-text|alias|copy|no-drop|grab|grabbing|all-scroll|col-resize|row-resize|n-resize|e-resize|s-resize|w-resize|ne-resize|nw-resize|se-resize|sw-resize|ew-resize|ns-resize|nesw-resize|nwse-resize|zoom-in|zoom-out}`
-`cursor-[value]`
 
-#### field-sizing
-`field-sizing-fixed` `field-sizing-content`
+### 对应源码
 
-#### pointer-events
-`pointer-events-auto` `pointer-events-none`
+```html
+<div class="@container">
+  <div class="flex flex-col gap-2 @md:flex-row">
+    <div class="flex-1 rounded bg-slate-800 p-3">A</div>
+    <div class="flex-1 rounded bg-slate-800 p-3">B</div>
+  </div>
+</div>
+```
 
-#### resize
-`resize` (both) `resize-none` `resize-x` `resize-y`
 
-#### scroll-behavior
-`scroll-auto` `scroll-smooth`
+> **提示：** 命名容器：@container/main，子级 @md/main:flex-row。
 
-#### scroll-margin
-`scroll-m-{n}` `scroll-mx-{n}` `scroll-my-{n}` `scroll-mt-{n}` `scroll-mr-{n}` `scroll-mb-{n}` `scroll-ml-{n}` `scroll-ms-{n}` `scroll-me-{n}`
 
-#### scroll-padding
-`scroll-p-{n}` `scroll-px-{n}` `scroll-py-{n}` `scroll-pt-{n}` `scroll-pr-{n}` `scroll-pb-{n}` `scroll-pl-{n}` `scroll-ps-{n}` `scroll-pe-{n}`
+**测验：**
+- Q: 容器查询父级标记？
+  - [ ] @media-parent
+  - [✓] @container
+  - [ ] container-type-only class empty
+  - [ ] query-root
+  - 解析: @container 建立查询容器。
 
-#### scroll-snap-type
-`snap-none` `snap-x` `snap-y` `snap-both`
-`snap-mandatory` `snap-proximity` (strictness modifiers)
-
-#### scroll-snap-align
-`snap-start` `snap-end` `snap-center` `snap-align-none`
-
-#### scroll-snap-stop
-`snap-normal` `snap-always`
-
-#### touch-action
-`touch-auto` `touch-none` `touch-pan-x` `touch-pan-left` `touch-pan-right` `touch-pan-y` `touch-pan-up` `touch-pan-down` `touch-pinch-zoom` `touch-manipulation`
-
-#### user-select
-`select-none` `select-text` `select-all` `select-auto`
-
-#### will-change
-`will-change-auto` `will-change-scroll` `will-change-contents` `will-change-transform`
-`will-change-[value]`
 
 ---
 
-### SVG
+# 指令与函数
 
-#### fill
-`fill-{color}-{shade}` `fill-none` `fill-inherit` `fill-current` `fill-transparent`
-`fill-[value]`
+- slug: `directives`
+- track: 主题
+- level: 进阶
+- minutes: 11
 
-#### stroke
-`stroke-{color}-{shade}` `stroke-none` `stroke-inherit` `stroke-current` `stroke-transparent`
-`stroke-[value]`
+### Directives（官网 Functions and directives）
 
-#### stroke-width
-`stroke-{n}` `stroke-[value]`
+v4 核心指令：
+• @import "tailwindcss"
+• @theme { } 设计令牌
+• @source 额外扫描路径
+• @utility 自定义工具类
+• @variant / @custom-variant
+• @apply 组合工具类（克制使用）
+• @plugin / @config 兼容层
+
+函数：--alpha()、--spacing() 在 CSS 中读取主题刻度。
+
+
+### 对应源码
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #38bdf8;
+  --spacing-card: 1.5rem;
+}
+
+@utility card-surface {
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  padding: var(--spacing-card);
+}
+```
+
+
+**交互 Demo：** 动手：令牌（kind: `v4`）
+
+
+**测验：**
+- Q: 定义新工具类推荐？
+  - [ ] 只写全局 .my-btn {}
+  - [✓] @utility
+  - [ ] inline style
+  - [ ] jQuery addClass random
+  - 解析: @utility 接入 Tailwind 变体体系。
+
 
 ---
+
+# 无障碍
+
+- slug: `accessibility`
+- track: 工程
+- level: 实战
+- minutes: 9
 
 ### Accessibility
 
-#### forced-color-adjust
-`forced-color-adjust-auto` `forced-color-adjust-none`
+官网与生产实践：
+• focus-visible:ring 保证键盘可见焦点
+• 颜色对比达标（text-muted 勿过淡）
+• sr-only 提供读屏文本
+• motion-reduce:transition-none
+• 不要用 div 冒充 button 却不处理键盘
+• forced-colors 场景关注 forced-color-adjust
+
+
+### 对应源码
+
+```html
+<button class="rounded-lg bg-sky-500 px-4 py-2 text-white
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300
+  motion-reduce:transition-none">
+  <span class="sr-only">关闭对话框</span>
+  OK
+</button>
+```
+
+
+**测验：**
+- Q: 键盘焦点环更推荐？
+  - [ ] outline-none 永久
+  - [✓] focus-visible:ring-*
+  - [ ] 只有 hover 边框
+  - [ ] title 属性
+  - 解析: focus-visible 避免鼠标点击残留粗环。
+
 
 ---
 
-## Default Theme Variables
+# SVG 样式
 
-### Spacing
-`--spacing: 0.25rem` (4px)
-Utilities use `calc(var(--spacing) * n)` for values like `p-4`, `m-8`, `gap-2`, etc.
+- slug: `svg`
+- track: 视觉
+- level: 入门
+- minutes: 7
 
-### Breakpoints
-| Variable | Value |
-|----------|-------|
-| `--breakpoint-sm` | 40rem (640px) |
-| `--breakpoint-md` | 48rem (768px) |
-| `--breakpoint-lg` | 64rem (1024px) |
-| `--breakpoint-xl` | 80rem (1280px) |
-| `--breakpoint-2xl` | 96rem (1536px) |
+### SVG
 
-### Container Sizes
-| Variable | Value |
-|----------|-------|
-| `--container-3xs` | 16rem (256px) |
-| `--container-2xs` | 18rem (288px) |
-| `--container-xs` | 20rem (320px) |
-| `--container-sm` | 24rem (384px) |
-| `--container-md` | 28rem (448px) |
-| `--container-lg` | 32rem (512px) |
-| `--container-xl` | 36rem (576px) |
-| `--container-2xl` | 42rem (672px) |
-| `--container-3xl` | 48rem (768px) |
-| `--container-4xl` | 56rem (896px) |
-| `--container-5xl` | 64rem (1024px) |
-| `--container-6xl` | 72rem (1152px) |
-| `--container-7xl` | 80rem (1280px) |
+fill-sky-500、stroke-slate-400、stroke-2。图标常用 text-current + fill-current 跟随文字色。size-5 控制图标盒。
 
-### Font Sizes
-| Variable | Size | Line Height |
-|----------|------|-------------|
-| `--text-xs` | 0.75rem | 1rem |
-| `--text-sm` | 0.875rem | 1.25rem |
-| `--text-base` | 1rem | 1.5rem |
-| `--text-lg` | 1.125rem | 1.75rem |
-| `--text-xl` | 1.25rem | 1.75rem |
-| `--text-2xl` | 1.5rem | 2rem |
-| `--text-3xl` | 1.875rem | 2.25rem |
-| `--text-4xl` | 2.25rem | 2.5rem |
-| `--text-5xl` | 3rem | 1 |
-| `--text-6xl` | 3.75rem | 1 |
-| `--text-7xl` | 4.5rem | 1 |
-| `--text-8xl` | 6rem | 1 |
-| `--text-9xl` | 8rem | 1 |
 
-### Font Weights
-| Variable | Value |
-|----------|-------|
-| `--font-weight-thin` | 100 |
-| `--font-weight-extralight` | 200 |
-| `--font-weight-light` | 300 |
-| `--font-weight-normal` | 400 |
-| `--font-weight-medium` | 500 |
-| `--font-weight-semibold` | 600 |
-| `--font-weight-bold` | 700 |
-| `--font-weight-extrabold` | 800 |
-| `--font-weight-black` | 900 |
+### 对应源码
 
-### Letter Spacing
-| Variable | Value |
-|----------|-------|
-| `--tracking-tighter` | -0.05em |
-| `--tracking-tight` | -0.025em |
-| `--tracking-normal` | 0em |
-| `--tracking-wide` | 0.025em |
-| `--tracking-wider` | 0.05em |
-| `--tracking-widest` | 0.1em |
+```html
+<svg class="size-6 fill-none stroke-current stroke-2 text-sky-400" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" />
+</svg>
+```
 
-### Line Height
-| Variable | Value |
-|----------|-------|
-| `--leading-none` | 1 |
-| `--leading-tight` | 1.25 |
-| `--leading-snug` | 1.375 |
-| `--leading-normal` | 1.5 |
-| `--leading-relaxed` | 1.625 |
-| `--leading-loose` | 2 |
 
-### Border Radius
-| Variable | Value |
-|----------|-------|
-| `--radius-xs` | 0.125rem |
-| `--radius-sm` | 0.25rem |
-| `--radius-md` | 0.375rem |
-| `--radius-lg` | 0.5rem |
-| `--radius-xl` | 0.75rem |
-| `--radius-2xl` | 1rem |
-| `--radius-3xl` | 1.5rem |
-| `--radius-4xl` | 2rem |
+**测验：**
+- Q: 图标跟随文字颜色？
+  - [ ] fill-auto
+  - [✓] fill-current / text-*
+  - [ ] stroke-parent
+  - [ ] color-inherit-svg
+  - 解析: currentColor 体系。
 
-### Box Shadows
-| Variable | Value |
-|----------|-------|
-| `--shadow-2xs` | 0 1px rgb(0 0 0 / 0.05) |
-| `--shadow-xs` | 0 1px 2px 0 rgb(0 0 0 / 0.05) |
-| `--shadow-sm` | 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) |
-| `--shadow-md` | 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) |
-| `--shadow-lg` | 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) |
-| `--shadow-xl` | 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) |
-| `--shadow-2xl` | 0 25px 50px -12px rgb(0 0 0 / 0.25) |
-
-### Inset Shadows
-| Variable | Value |
-|----------|-------|
-| `--inset-shadow-2xs` | inset 0 1px rgb(0 0 0 / 0.05) |
-| `--inset-shadow-xs` | inset 0 1px 1px rgb(0 0 0 / 0.05) |
-| `--inset-shadow-sm` | inset 0 2px 4px rgb(0 0 0 / 0.05) |
-
-### Blur
-| Variable | Value |
-|----------|-------|
-| `--blur-xs` | 4px |
-| `--blur-sm` | 8px |
-| `--blur-md` | 12px |
-| `--blur-lg` | 16px |
-| `--blur-xl` | 24px |
-| `--blur-2xl` | 40px |
-| `--blur-3xl` | 64px |
-
-### Transition Timing
-| Variable | Value |
-|----------|-------|
-| `--ease-linear` | linear |
-| `--ease-in` | cubic-bezier(0.4, 0, 1, 1) |
-| `--ease-out` | cubic-bezier(0, 0, 0.2, 1) |
-| `--ease-in-out` | cubic-bezier(0.4, 0, 0.2, 1) |
-
-### Animations
-| Variable | Value |
-|----------|-------|
-| `--animate-spin` | spin 1s linear infinite |
-| `--animate-ping` | ping 1s cubic-bezier(0, 0, 0.2, 1) infinite |
-| `--animate-pulse` | pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite |
-| `--animate-bounce` | bounce 1s infinite |
-
-### Colors (Pattern)
-Theme variables: `--color-{name}-{shade}`
-- Names: slate, gray, zinc, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose
-- Shades: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950
-- Special: `--color-black`, `--color-white`, transparent, current, inherit
 
 ---
 
-## Appendix: Color Palette
+# 滚动与 Snap
 
-All colors defined as `--color-{name}-{shade}` variables (e.g., `--color-slate-50`).
+- slug: `scroll`
+- track: 交互
+- level: 进阶
+- minutes: 8
 
-### Slate
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.4% 0.003 247.858) |
-| 100 | oklch(96.8% 0.007 247.896) |
-| 200 | oklch(92.9% 0.013 255.508) |
-| 300 | oklch(86.9% 0.022 252.894) |
-| 400 | oklch(70.4% 0.04 256.788) |
-| 500 | oklch(55.4% 0.046 257.417) |
-| 600 | oklch(44.6% 0.043 257.281) |
-| 700 | oklch(37.2% 0.044 257.287) |
-| 800 | oklch(27.9% 0.041 260.031) |
-| 900 | oklch(20.8% 0.042 265.755) |
-| 950 | oklch(12.9% 0.042 264.695) |
+### Interactivity · scroll
 
-### Gray
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.5% 0.002 247.839) |
-| 100 | oklch(96.7% 0.003 264.542) |
-| 200 | oklch(92.8% 0.006 264.531) |
-| 300 | oklch(87.2% 0.01 258.338) |
-| 400 | oklch(70.7% 0.022 261.325) |
-| 500 | oklch(55.1% 0.027 264.364) |
-| 600 | oklch(44.6% 0.03 256.802) |
-| 700 | oklch(37.3% 0.034 259.733) |
-| 800 | oklch(27.8% 0.033 256.848) |
-| 900 | oklch(21% 0.034 264.665) |
-| 950 | oklch(13% 0.028 261.692) |
+scroll-smooth、scroll-mt-*（锚点避开吸顶导航）、snap-x snap-mandatory、snap-center、overscroll-contain。
 
-### Zinc
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.5% 0 0) |
-| 100 | oklch(96.7% 0.001 286.375) |
-| 200 | oklch(92% 0.004 286.32) |
-| 300 | oklch(87.1% 0.006 286.286) |
-| 400 | oklch(70.5% 0.015 286.067) |
-| 500 | oklch(55.2% 0.016 285.938) |
-| 600 | oklch(44.2% 0.017 285.786) |
-| 700 | oklch(37% 0.013 285.805) |
-| 800 | oklch(27.4% 0.006 286.033) |
-| 900 | oklch(21% 0.006 285.885) |
-| 950 | oklch(14.1% 0.005 285.823) |
+落地页分区导航常用 scroll-mt-20。
 
-### Neutral
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.5% 0 0) |
-| 100 | oklch(97% 0 0) |
-| 200 | oklch(92.2% 0 0) |
-| 300 | oklch(87% 0 0) |
-| 400 | oklch(70.8% 0 0) |
-| 500 | oklch(55.6% 0 0) |
-| 600 | oklch(43.9% 0 0) |
-| 700 | oklch(37.1% 0 0) |
-| 800 | oklch(26.9% 0 0) |
-| 900 | oklch(20.5% 0 0) |
-| 950 | oklch(14.5% 0 0) |
 
-### Stone
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.5% 0.001 106.423) |
-| 100 | oklch(97% 0.001 106.424) |
-| 200 | oklch(92.3% 0.003 48.717) |
-| 300 | oklch(86.9% 0.005 56.366) |
-| 400 | oklch(70.9% 0.01 56.259) |
-| 500 | oklch(55.3% 0.013 58.071) |
-| 600 | oklch(44.4% 0.011 73.639) |
-| 700 | oklch(37.4% 0.01 67.558) |
-| 800 | oklch(26.8% 0.007 34.298) |
-| 900 | oklch(21.6% 0.006 56.043) |
-| 950 | oklch(14.7% 0.004 49.25) |
+### 对应源码
 
-### Red
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.1% 0.013 17.38) |
-| 100 | oklch(93.6% 0.032 17.717) |
-| 200 | oklch(88.5% 0.062 18.334) |
-| 300 | oklch(80.8% 0.114 19.571) |
-| 400 | oklch(70.4% 0.191 22.216) |
-| 500 | oklch(63.7% 0.237 25.331) |
-| 600 | oklch(57.7% 0.245 27.325) |
-| 700 | oklch(50.5% 0.213 27.518) |
-| 800 | oklch(44.4% 0.177 26.899) |
-| 900 | oklch(39.6% 0.141 25.723) |
-| 950 | oklch(25.8% 0.092 26.042) |
+```html
+<div class="flex snap-x snap-mandatory gap-3 overflow-x-auto">
+  <div class="w-64 shrink-0 snap-center rounded-xl bg-slate-800 p-4">1</div>
+  <div class="w-64 shrink-0 snap-center rounded-xl bg-slate-800 p-4">2</div>
+</div>
+```
 
-### Orange
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98% 0.016 73.684) |
-| 100 | oklch(95.4% 0.038 75.164) |
-| 200 | oklch(90.1% 0.076 70.697) |
-| 300 | oklch(83.7% 0.128 66.29) |
-| 400 | oklch(75% 0.183 55.934) |
-| 500 | oklch(70.5% 0.213 47.604) |
-| 600 | oklch(64.6% 0.222 41.116) |
-| 700 | oklch(55.3% 0.195 38.402) |
-| 800 | oklch(47% 0.157 37.304) |
-| 900 | oklch(40.8% 0.123 38.172) |
-| 950 | oklch(26.6% 0.079 36.259) |
 
-### Amber
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.7% 0.022 95.277) |
-| 100 | oklch(96.2% 0.059 95.617) |
-| 200 | oklch(92.4% 0.12 95.746) |
-| 300 | oklch(87.9% 0.169 91.605) |
-| 400 | oklch(82.8% 0.189 84.429) |
-| 500 | oklch(76.9% 0.188 70.08) |
-| 600 | oklch(66.6% 0.179 58.318) |
-| 700 | oklch(55.5% 0.163 48.998) |
-| 800 | oklch(47.3% 0.137 46.201) |
-| 900 | oklch(41.4% 0.112 45.904) |
-| 950 | oklch(27.9% 0.077 45.635) |
+**测验：**
+- Q: 横向吸附滚动？
+  - [ ] scroll-x-only
+  - [✓] snap-x snap-mandatory
+  - [ ] overflow-snap
+  - [ ] carousel:true
+  - 解析: snap 类型 + 子项 snap-center/start。
 
-### Yellow
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.7% 0.026 102.212) |
-| 100 | oklch(97.3% 0.071 103.193) |
-| 200 | oklch(94.5% 0.129 101.54) |
-| 300 | oklch(90.5% 0.182 98.111) |
-| 400 | oklch(85.2% 0.199 91.936) |
-| 500 | oklch(79.5% 0.184 86.047) |
-| 600 | oklch(68.1% 0.162 75.834) |
-| 700 | oklch(55.4% 0.135 66.442) |
-| 800 | oklch(47.6% 0.114 61.907) |
-| 900 | oklch(42.1% 0.095 57.708) |
-| 950 | oklch(28.6% 0.066 53.813) |
 
-### Lime
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.6% 0.031 120.757) |
-| 100 | oklch(96.7% 0.067 122.328) |
-| 200 | oklch(93.8% 0.127 124.321) |
-| 300 | oklch(89.7% 0.196 126.665) |
-| 400 | oklch(84.1% 0.238 128.85) |
-| 500 | oklch(76.8% 0.233 130.85) |
-| 600 | oklch(64.8% 0.2 131.684) |
-| 700 | oklch(53.2% 0.157 131.589) |
-| 800 | oklch(45.3% 0.124 130.933) |
-| 900 | oklch(40.5% 0.101 131.063) |
-| 950 | oklch(27.4% 0.072 132.109) |
+---
 
-### Green
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.2% 0.018 155.826) |
-| 100 | oklch(96.2% 0.044 156.743) |
-| 200 | oklch(92.5% 0.084 155.995) |
-| 300 | oklch(87.1% 0.15 154.449) |
-| 400 | oklch(79.2% 0.209 151.711) |
-| 500 | oklch(72.3% 0.219 149.579) |
-| 600 | oklch(62.7% 0.194 149.214) |
-| 700 | oklch(52.7% 0.154 150.069) |
-| 800 | oklch(44.8% 0.119 151.328) |
-| 900 | oklch(39.3% 0.095 152.535) |
-| 950 | oklch(26.6% 0.065 152.934) |
+# 表格样式
 
-### Emerald
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.9% 0.021 166.113) |
-| 100 | oklch(95% 0.052 163.051) |
-| 200 | oklch(90.5% 0.093 164.15) |
-| 300 | oklch(84.5% 0.143 164.978) |
-| 400 | oklch(76.5% 0.177 163.223) |
-| 500 | oklch(69.6% 0.17 162.48) |
-| 600 | oklch(59.6% 0.145 163.225) |
-| 700 | oklch(50.8% 0.118 165.612) |
-| 800 | oklch(43.2% 0.095 166.913) |
-| 900 | oklch(37.8% 0.077 168.94) |
-| 950 | oklch(26.2% 0.051 172.552) |
+- slug: `tables`
+- track: 布局
+- level: 入门
+- minutes: 7
 
-### Teal
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.4% 0.014 180.72) |
-| 100 | oklch(95.3% 0.051 180.801) |
-| 200 | oklch(91% 0.096 180.426) |
-| 300 | oklch(85.5% 0.138 181.071) |
-| 400 | oklch(77.7% 0.152 181.912) |
-| 500 | oklch(70.4% 0.14 182.503) |
-| 600 | oklch(60% 0.118 184.704) |
-| 700 | oklch(51.1% 0.096 186.391) |
-| 800 | oklch(43.7% 0.078 188.216) |
-| 900 | oklch(38.6% 0.063 188.416) |
-| 950 | oklch(27.7% 0.046 192.524) |
+### Tables
 
-### Cyan
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(98.4% 0.019 200.873) |
-| 100 | oklch(95.6% 0.045 203.388) |
-| 200 | oklch(91.7% 0.08 205.041) |
-| 300 | oklch(86.5% 0.127 207.078) |
-| 400 | oklch(78.9% 0.154 211.53) |
-| 500 | oklch(71.5% 0.143 215.221) |
-| 600 | oklch(60.9% 0.126 221.723) |
-| 700 | oklch(52% 0.105 223.128) |
-| 800 | oklch(45% 0.085 224.283) |
-| 900 | oklch(39.8% 0.07 227.392) |
-| 950 | oklch(30.2% 0.056 229.695) |
+table-auto / table-fixed、border-collapse、border-spacing、caption-side。配合 divide-y 与 text-left 做数据表。
 
-### Sky
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.7% 0.013 236.62) |
-| 100 | oklch(95.1% 0.026 236.824) |
-| 200 | oklch(90.1% 0.058 230.902) |
-| 300 | oklch(82.8% 0.111 230.318) |
-| 400 | oklch(74.6% 0.16 232.661) |
-| 500 | oklch(68.5% 0.169 237.323) |
-| 600 | oklch(58.8% 0.158 241.966) |
-| 700 | oklch(50% 0.134 242.749) |
-| 800 | oklch(44.3% 0.11 240.79) |
-| 900 | oklch(39.1% 0.09 240.876) |
-| 950 | oklch(29.3% 0.066 243.157) |
 
-### Blue
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97% 0.014 254.604) |
-| 100 | oklch(93.2% 0.032 255.585) |
-| 200 | oklch(88.2% 0.059 254.128) |
-| 300 | oklch(80.9% 0.105 251.813) |
-| 400 | oklch(70.7% 0.165 254.624) |
-| 500 | oklch(62.3% 0.214 259.815) |
-| 600 | oklch(54.6% 0.245 262.881) |
-| 700 | oklch(48.8% 0.243 264.376) |
-| 800 | oklch(42.4% 0.199 265.638) |
-| 900 | oklch(37.9% 0.146 265.522) |
-| 950 | oklch(28.2% 0.091 267.935) |
+### 对应源码
 
-### Indigo
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(96.2% 0.018 272.314) |
-| 100 | oklch(93% 0.034 272.788) |
-| 200 | oklch(87% 0.065 274.039) |
-| 300 | oklch(78.5% 0.115 274.713) |
-| 400 | oklch(67.3% 0.182 276.935) |
-| 500 | oklch(58.5% 0.233 277.117) |
-| 600 | oklch(51.1% 0.262 276.966) |
-| 700 | oklch(45.7% 0.24 277.023) |
-| 800 | oklch(39.8% 0.195 277.366) |
-| 900 | oklch(35.9% 0.144 278.697) |
-| 950 | oklch(25.7% 0.09 281.288) |
+```html
+<table class="w-full table-auto border-collapse text-sm">
+  <thead class="text-left text-slate-400">
+    <tr class="border-b border-slate-700"><th class="py-2">Name</th><th>Role</th></tr>
+  </thead>
+  <tbody class="divide-y divide-slate-800">
+    <tr><td class="py-2">Ada</td><td>Engineer</td></tr>
+  </tbody>
+</table>
+```
 
-### Violet
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(96.9% 0.016 293.756) |
-| 100 | oklch(94.3% 0.029 294.588) |
-| 200 | oklch(89.4% 0.057 293.283) |
-| 300 | oklch(81.1% 0.111 293.571) |
-| 400 | oklch(70.2% 0.183 293.541) |
-| 500 | oklch(60.6% 0.25 292.717) |
-| 600 | oklch(54.1% 0.281 293.009) |
-| 700 | oklch(49.1% 0.27 292.581) |
-| 800 | oklch(43.2% 0.232 292.759) |
-| 900 | oklch(38% 0.189 293.745) |
-| 950 | oklch(28.3% 0.141 291.089) |
 
-### Purple
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.7% 0.014 308.299) |
-| 100 | oklch(94.6% 0.033 307.174) |
-| 200 | oklch(90.2% 0.063 306.703) |
-| 300 | oklch(82.7% 0.119 306.383) |
-| 400 | oklch(71.4% 0.203 305.504) |
-| 500 | oklch(62.7% 0.265 303.9) |
-| 600 | oklch(55.8% 0.288 302.321) |
-| 700 | oklch(49.6% 0.265 301.924) |
-| 800 | oklch(43.8% 0.218 303.724) |
-| 900 | oklch(38.1% 0.176 304.987) |
-| 950 | oklch(29.1% 0.149 302.717) |
+**测验：**
+- Q: 固定列宽算法？
+  - [ ] table-auto
+  - [✓] table-fixed
+  - [ ] table-lock
+  - [ ] cols-fixed
+  - 解析: table-fixed 使用固定布局。
 
-### Fuchsia
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.7% 0.017 320.058) |
-| 100 | oklch(95.2% 0.037 318.852) |
-| 200 | oklch(90.3% 0.076 319.62) |
-| 300 | oklch(83.3% 0.145 321.434) |
-| 400 | oklch(74% 0.238 322.16) |
-| 500 | oklch(66.7% 0.295 322.15) |
-| 600 | oklch(59.1% 0.293 322.896) |
-| 700 | oklch(51.8% 0.253 323.949) |
-| 800 | oklch(45.2% 0.211 324.591) |
-| 900 | oklch(40.1% 0.17 325.612) |
-| 950 | oklch(29.3% 0.136 325.661) |
 
-### Pink
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(97.1% 0.014 343.198) |
-| 100 | oklch(94.8% 0.028 342.258) |
-| 200 | oklch(89.9% 0.061 343.231) |
-| 300 | oklch(82.3% 0.12 346.018) |
-| 400 | oklch(71.8% 0.202 349.761) |
-| 500 | oklch(65.6% 0.241 354.308) |
-| 600 | oklch(59.2% 0.249 0.584) |
-| 700 | oklch(52.5% 0.223 3.958) |
-| 800 | oklch(45.9% 0.187 3.815) |
-| 900 | oklch(40.8% 0.153 2.432) |
-| 950 | oklch(28.4% 0.109 3.907) |
+---
 
-### Rose
-| Shade | Value |
-|-------|-------|
-| 50 | oklch(96.9% 0.015 12.422) |
-| 100 | oklch(94.1% 0.03 12.58) |
-| 200 | oklch(89.2% 0.058 10.001) |
-| 300 | oklch(81% 0.117 11.638) |
-| 400 | oklch(71.2% 0.194 13.428) |
-| 500 | oklch(64.5% 0.246 16.439) |
-| 600 | oklch(58.6% 0.253 17.585) |
-| 700 | oklch(51.4% 0.222 16.935) |
-| 800 | oklch(45.5% 0.188 13.697) |
-| 900 | oklch(41% 0.159 10.272) |
-| 950 | oklch(27.1% 0.105 12.094) |
+# 复用样式
 
-### Special Colors
-| Name | Value |
-|------|-------|
-| black | #000 |
-| white | #fff |
+- slug: `reusing-styles`
+- track: 工程
+- level: 进阶
+- minutes: 9
+
+### Reusing styles（官网核心概念）
+
+官方推荐顺序：
+1. 抽成框架组件（React/Vue）传 className
+2. 用 cn/twMerge 合并冲突
+3. 必要时 @utility / @apply
+
+不要复制 20 行 class 到 15 个文件还不抽组件。
+
+
+### 对应源码 · cn
+
+```tsx
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+<button className={cn("rounded-lg px-3 py-2", active && "bg-sky-500 text-white")} />
+```
+
+
+**测验：**
+- Q: class 冲突合并？
+  - [ ] 字符串相加即可
+  - [✓] tailwind-merge / cn()
+  - [ ] 随机
+  - [ ] 不用 Tailwind
+  - 解析: twMerge 理解 utility 冲突。
+
+
+---
+
+# 类名检测与动态类
+
+- slug: `detecting-classes`
+- track: 工程
+- level: 进阶
+- minutes: 8
+
+### Detecting classes in source files
+
+Tailwind 通过扫描源码提取完整类名字符串。动态拼接常失败：
+
+坏：`bg-${color}-500`
+好：完整字面量映射表 `color === 'sky' ? 'bg-sky-500' : 'bg-indigo-500'`
+
+额外路径用 @source；极端用 safelist（v3）或保证源码出现完整类名。
+
+
+### 对应源码
+
+```tsx
+const map = {
+  sky: "bg-sky-500",
+  indigo: "bg-indigo-500",
+} as const;
+
+<div className={map[hue]} />
+```
+
+
+**测验：**
+- Q: 为何避免 bg-${x}-500？
+  - [ ] 语法非法
+  - [✓] 扫描器看不到完整类名
+  - [ ] 浏览器禁止
+  - [ ] 只在 Vue 失败
+  - 解析: 静态分析需要完整字面量。
+
+
+---
+
+# 编辑器与 DX
+
+- slug: `editor-setup`
+- track: 工程
+- level: 入门
+- minutes: 7
+
+### Editor setup
+
+官方推荐：
+• VS Code Tailwind CSS IntelliSense
+• Prettier plugin 自动排序 class
+• 保存时格式化
+
+团队一致的 class 顺序能大幅降低 diff 噪音。
+
+
+> **提示：** 本教程站本身即可当「可读的 class 范例库」——复制 Demo 源码到项目里改。
+
+
+**测验：**
+- Q: 自动排序 class 常用？
+  - [ ] eslint-only
+  - [✓] Prettier Tailwind 插件
+  - [ ] 手动每次
+  - [ ] webpack plugin 必须
+  - 解析: prettier-plugin-tailwindcss。
+
+
+---
+
+# 从 v3 升级到 v4
+
+- slug: `upgrade-guide`
+- track: 工程
+- level: 进阶
+- minutes: 10
+
+### Upgrade
+
+v4 重点变化：
+• CSS-first @theme 替代大部分 tailwind.config 主题扩展
+• 新引擎，性能大幅提升
+• 部分工具类更名/行为调整（以官网 Upgrade guide 为准）
+• @config 可继续指向旧 JS 配置做迁移
+
+建议：新项目直接 v4；旧项目按官方 upgrade 工具逐步迁。
+
+
+### 心智对照
+
+```css
+/* v3 theme.extend.colors.brand */
+/* v4 */
+@theme {
+  --color-brand: #38bdf8;
+}
+```
+
+
+**测验：**
+- Q: v4 主题扩展主战场？
+  - [ ] only JS config forever
+  - [✓] @theme in CSS
+  - [ ] inline style
+  - [ ] HTML data-theme only
+  - 解析: CSS-first @theme。
+
+
+---
+
+# 对照官网地图
+
+- slug: `official-map`
+- track: 基础
+- level: 入门
+- minutes: 6
+
+### 和官网怎么分工
+
+官网 tailwindcss.com/docs：权威 API、每个工具类的完整表。
+
+本站 learning-tailwind：中文学习路径、交互 Demo、测验、Playground、设计工坊、进度系统。
+
+建议：本站学概念 → 本站 Reference 速查 → 官网查边缘参数与兼容性。
+
+说明：官网目前未在生产环境提供 /llms.txt（社区讨论与草案分支存在）；本站提供 /llms.txt 便于 AI 阅读本课程大纲。
+
+
+> **提示：** 打开侧栏「工具类 Reference」可按分类浏览 170+ 条目，并外链到官网对应页。
+
+
+**测验：**
+- Q: 查某个工具类完整参数表优先？
+  - [ ] 只靠记忆
+  - [✓] 官网 docs 单页 + 本站 Reference
+  - [ ] 随机博客
+  - [ ] 只看推特
+  - 解析: 官网权威，本站辅助学习。
+
+
+---
+
+# Preflight 基础重置
+
+- slug: `preflight`
+- track: 基础
+- level: 入门
+- minutes: 7
+
+### 什么是 Preflight
+
+官网 Base styles → Preflight：一套建立在 modern-normalize 上的基础样式。
+
+作用包括：
+• 去掉默认 margin
+• 标题/段落继承字号
+• 图片默认 block、自适应
+• 表单控件边框可继承
+• border-box 全局
+
+写页面时若「默认样式怪」，先查 Preflight 是否被覆盖。
+
+
+### 对应概念
+
+```css
+/* Preflight 会大致等价于这些思路（示意） */
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+```
+
+
+> **提示：** 完整规则见官网 /docs/preflight。可用 @layer base 追加，而不是硬改第三方组件。
+
+
+**测验：**
+- Q: Preflight 主要是？
+  - [ ] 动画库
+  - [✓] 基础样式重置
+  - [ ] 路由插件
+  - [ ] 色板生成器
+  - 解析: Base reset / normalize 层。
+
+
+---
+
+# Display · Overflow · Object · Columns
+
+- slug: `layout-display`
+- track: 布局
+- level: 入门
+- minutes: 11
+
+### Layout 补全
+
+官网 Layout 章节除 position 外还有：
+
+• display：block / inline / flex / grid / hidden / contents / sr-only 相关
+• float / clear：图文环绕（现代布局较少）
+• isolation：层叠上下文
+• object-fit / object-position：img/video 填充
+• overflow / overscroll-behavior：裁剪与滚动链
+• columns：多列文本排版
+• aspect-ratio、box-sizing、break-*
+
+本课补齐此前课程未单独展开的部分。
+
+
+### 对应源码
+
+```html
+<img class="h-40 w-full object-cover object-center" src="..." alt="" />
+<div class="max-h-48 overflow-auto overscroll-contain">…长内容…</div>
+<div class="columns-2 gap-6">…多列正文…</div>
+<div class="hidden md:block">仅桌面显示</div>
+```
+
+
+**交互 Demo：** 动手：尺寸与裁剪（kind: `sizing`）
+
+
+**测验：**
+- Q: 图片裁切填满盒子？
+  - [ ] object-contain
+  - [✓] object-cover
+  - [ ] bg-cover on img
+  - [ ] fit-fill
+  - 解析: object-cover。
+- Q: 默认隐藏、md 显示？
+  - [ ] md:hidden
+  - [✓] hidden md:block
+  - [ ] invisible md:visible only
+  - [ ] display-md
+  - 解析: hidden + md:block/flex。
+
+
+---
+
+# Mask 遮罩
+
+- slug: `masks`
+- track: 视觉
+- level: 进阶
+- minutes: 8
+
+### Masks
+
+官网 Effects 含 mask-image / size / position / repeat / origin / clip / composite / mode / type。
+
+用于渐隐边缘、不规则裁剪、与渐变 mask 结合做 fade。兼容性需参考官网 Compatibility。
+
+
+### 对应源码
+
+```html
+<div class="h-32 w-full bg-gradient-to-r from-sky-500 to-indigo-500
+  mask-[linear-gradient(to_bottom,black,transparent)]">
+  底部渐隐
+</div>
+```
+
+
+**测验：**
+- Q: 遮罩主要属性？
+  - [ ] clip-only
+  - [✓] mask-image 等 mask-*
+  - [ ] opacity-mask
+  - [ ] z-mask
+  - 解析: mask-* 系列。
+
+
+---
+
+# 添加自定义样式
+
+- slug: `custom-styles`
+- track: 主题
+- level: 进阶
+- minutes: 10
+
+### Adding custom styles
+
+官网核心概念页覆盖：
+1. 任意值 []
+2. 主题扩展 @theme
+3. 自定义工具 @utility
+4. 自定义变体 @custom-variant
+5. 任意变体 [&_svg]:
+6. 何时写真正的 CSS
+
+原则：能进主题的进主题；一次性的用任意值；复用多次抽 @utility 或组件。
+
+
+### 对应源码
+
+```css
+@theme {
+  --color-brand: #38bdf8;
+}
+
+@utility content-auto {
+  content-visibility: auto;
+}
+
+/* 任意变体 */
+/* class="[&_svg]:size-4" */
+```
+
+
+**交互 Demo：** 动手：令牌与扩展（kind: `v4`）
+
+
+**测验：**
+- Q: 复用多次的自定义样式优先？
+  - [ ] 到处 p-[13px]
+  - [✓] @theme / @utility / 组件
+  - [ ] 只写 style=
+  - [ ] 全局 * 选择器
+  - 解析: 设计系统优先。
+
+
+---
+
+# 浏览器兼容
+
+- slug: `compatibility`
+- track: 工程
+- level: 进阶
+- minutes: 7
+
+### Compatibility
+
+Tailwind v4 依赖较新的浏览器能力（如 cascade layers、color-mix、@property 等，以官网 Compatibility 列表为准）。
+
+生产前：
+• 确认目标浏览器矩阵
+• 对必须支持的旧环境评估是否仍用 v3 或 polyfill
+• 渐进增强，不假设所有 mask/container 特性都可用
+
+
+> **提示：** 细节与版本表以 https://tailwindcss.com/docs/compatibility 为准，随浏览器更新。
+
+
+**测验：**
+- Q: 上线前应？
+  - [ ] 忽略兼容
+  - [✓] 对照官网 Compatibility 与业务浏览器矩阵
+  - [ ] 只测最新 Chrome
+  - [ ] 关闭 Preflight
+  - 解析: 以官方兼容说明 + 产品需求为准。
+

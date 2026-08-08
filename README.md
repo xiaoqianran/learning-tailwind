@@ -1,3 +1,12 @@
+# learning-tailwind
+
+交互式中文 **Tailwind CSS** 教程（TanStack Start + Vite）。
+
+- 官方 **暂无** `llms.txt`；权威以 [tailwindcss.com/docs](https://tailwindcss.com/docs) 为准
+- 本站：[`/llms.txt`](https://xiaoqianran.github.io/learning-tailwind/llms.txt) · [`/llms-full.txt`](https://xiaoqianran.github.io/learning-tailwind/llms-full.txt)
+- UI：Catppuccin + 学/查/练/我 导航（与 learning-vue3 同构）
+- 部署：GitHub Actions → GitHub Pages
+
 # Tailwind 实战学习
 
 交互式中文 Tailwind CSS **v4** 教程：课程 + 测验 + 进度 + Playground + 设计工坊 + **工具类 Reference**。
