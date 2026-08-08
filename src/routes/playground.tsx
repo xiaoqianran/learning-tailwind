@@ -8,7 +8,7 @@ export const Route = createFileRoute("/playground")({
   component: PlaygroundPage,
 });
 
-const PRESETS = [
+const PRESETS: { id: string; title: string; html: string }[] = [
   {
     id: "button",
     title: "按钮",
@@ -48,7 +48,7 @@ const PRESETS = [
   <div class="rounded-lg bg-sky-500/40 p-4 text-sm text-sky-100 sm:col-span-2">C · col-span-2</div>
 </div>`,
   },
-] as const;
+];
 
 function buildPreviewDoc(bodyHtml: string) {
   return `<!DOCTYPE html>
@@ -67,14 +67,12 @@ function buildPreviewDoc(bodyHtml: string) {
 }
 
 function PlaygroundPage() {
-  const [activeId, setActiveId] = useState<(typeof PRESETS)[number]["id"]>(
-    "button",
-  );
+  const [activeId, setActiveId] = useState("button");
   const preset = useMemo(
     () => PRESETS.find((p) => p.id === activeId) ?? PRESETS[0],
     [activeId],
   );
-  const [code, setCode] = useState(preset.html);
+  const [code, setCode] = useState<string>(preset.html);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -84,8 +82,7 @@ function PlaygroundPage() {
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
-    const doc = buildPreviewDoc(code);
-    iframe.srcdoc = doc;
+    iframe.srcdoc = buildPreviewDoc(code);
   }, [code]);
 
   return (
@@ -119,11 +116,7 @@ function PlaygroundPage() {
             {p.title}
           </button>
         ))}
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setCode(preset.html)}
-        >
+        <Button size="sm" variant="ghost" onClick={() => setCode(preset.html)}>
           <RotateCcw className="h-3.5 w-3.5" />
           重置
         </Button>
